@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
     View,
     Text,
@@ -12,8 +12,13 @@ import MagicPencilIcon from '../../assets/svg/MagicPencilIcon.svg';
 import Pattern from '../../assets/svg/Pattern1.svg';
 import PlusIcon from '../../assets/svg/PlusIcon.svg';
 import {PieChart} from "react-native-chart-kit";
+import {useAppNavigation} from "../../common/navigationHelper.ts";
+import AddAllocationModal from "./AddAllocationModal";
 
 export default function HomeScreen() {
+    const navigation = useAppNavigation()
+    const [addAllocationModalVisible, setAddAllocationModalVisible] = useState(false);
+
     const allocations = [
         {
             id: 1,
@@ -137,7 +142,9 @@ export default function HomeScreen() {
                         </Text>
                         <MagicPencilIcon/>
                     </View>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                        setAddAllocationModalVisible(true)
+                    }}>
                         <Text className="text-primary text-md font-interMedium">
                             + Add New
                         </Text>
@@ -151,11 +158,17 @@ export default function HomeScreen() {
 
                         {/* Allocation Cards */}
                         {allocations.map((allocation) => (
-                            <View
+                            <TouchableOpacity
                                 key={allocation.id}
                                 className=" bg-[#494949] rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666]"
+                                onPress={() => {
+                                    navigation.navigate("SectionNavigator", {
+                                        screen: "AllocationDetails",
+                                    });
+                                }}
                             >
-                                <View className="w-[60px] h-[60px] overflow-hidden mr-3 flex items-center justify-center rounded-full">
+                                <View
+                                    className="w-[60px] h-[60px] overflow-hidden mr-3 flex items-center justify-center rounded-full">
                                     <PieChart
                                         data={pieData}
                                         width={65}
@@ -191,12 +204,15 @@ export default function HomeScreen() {
                                         {allocation.date}
                                     </Text>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
                         ))}
 
                         {/* Add New Allocation Button */}
                         <TouchableOpacity
-                            className="bg-[#363d3a] border-dashed border-[1.5px] border-[#666666] rounded-2xl px-4 py-8 items-center justify-center mt-4 mb-40">
+                            className="bg-[#363d3a] border-dashed border-[1.5px] border-[#666666] rounded-2xl px-4 py-8 items-center justify-center mt-4 mb-40"
+                            onPress={() => {
+                                setAddAllocationModalVisible(true)
+                            }}>
                             <View className="flex flex-row items-center justify-center gap-2">
                                 <PlusIcon/>
                                 <Text className="text-primary text-base font-interSemiBold">
@@ -206,6 +222,13 @@ export default function HomeScreen() {
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
+                <AddAllocationModal
+                    visible={addAllocationModalVisible}
+                    onClose={() => setAddAllocationModalVisible(false)}
+                    onSave={() => {
+
+                    }}
+                />
             </LinearGradient>
         </SafeAreaView>
     );
