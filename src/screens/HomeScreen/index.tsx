@@ -13,7 +13,7 @@ import Pattern from '../../assets/svg/Pattern1.svg';
 import PlusIcon from '../../assets/svg/PlusIcon.svg';
 import {PieChart} from "react-native-chart-kit";
 
-const App = () => {
+export default function HomeScreen() {
     const allocations = [
         {
             id: 1,
@@ -210,5 +210,3 @@ const App = () => {
         </SafeAreaView>
     );
 };
-
-export default App;
