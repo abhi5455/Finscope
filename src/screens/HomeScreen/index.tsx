@@ -94,12 +94,12 @@ const App = () => {
         <SafeAreaView className="flex-1 bg-gray-800">
             <LinearGradient
                 colors={['#394f45', '#282828', '#282828']}
-                locations={[0, 0.2, 1]}
+                locations={[0, 0.15, 1]}
                 className="flex-1 flex-col gap-5 pt-8"
             >
 
                 {/* Header Section */}
-                <View className="mt-2 flex flex-row justify-center items-start px-6">
+                <View className="flex flex-row justify-center items-start px-6">
                     <View className="flex-1">
                         <Text className="text-white text-2xl font-interSemiBold mb-4">
                             Your Net{'\n'}Worth
@@ -130,7 +130,7 @@ const App = () => {
                 </View>
 
 
-                <View className="flex-row items-center justify-between px-6 mb-2">
+                <View className="flex-row items-center justify-between px-6 mt-3 mb-1">
                     <View className="flex-row items-center">
                         <Text className="text-white text-lg font-interSemiBold mr-2">
                             Allocations
@@ -156,19 +156,19 @@ const App = () => {
                                 className=" bg-[#494949] rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666]"
                             >
                                 <View className="w-[60px] h-[60px] overflow-hidden mr-3 flex items-center justify-center rounded-full">
-                                        <PieChart
-                                            data={pieData}
-                                            width={65}
-                                            height={65}
-                                            chartConfig={{
-                                                color: (opacity = 1) => `rgba(255, 0, 25, ${opacity})`,
-                                            }}
-                                            accessor="population"
-                                            backgroundColor="transparent"
-                                            paddingLeft="16"
-                                            hasLegend={false}
-                                            absolute
-                                        />
+                                    <PieChart
+                                        data={pieData}
+                                        width={65}
+                                        height={65}
+                                        chartConfig={{
+                                            color: (opacity = 1) => `rgba(255, 0, 25, ${opacity})`,
+                                        }}
+                                        accessor="population"
+                                        backgroundColor="transparent"
+                                        paddingLeft="16"
+                                        hasLegend={false}
+                                        absolute
+                                    />
                                 </View>
 
                                 <View className="flex-1">
