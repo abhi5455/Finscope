@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     ScrollView,
     SafeAreaView,
-    StatusBar,
 } from 'react-native';
 import {
     User,
@@ -62,7 +61,6 @@ const ProfileScreen: React.FC = () => {
 
     return (
         <SafeAreaView className="flex-1 bg-secondary">
-            <StatusBar barStyle="light-content" backgroundColor="#111827"/>
             <ScrollView className="flex-1 px-4 py-6">
 
                 {/* Profile Card */}

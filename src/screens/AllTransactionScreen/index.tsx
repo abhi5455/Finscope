@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     SafeAreaView,
 } from 'react-native';
-import BackIcon from '../../assets/svg/BackIcon.svg';
 import {useAppNavigation} from "../../common/navigationHelper.ts";
 
 export default function AllTransactionScreen() {

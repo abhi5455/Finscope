@@ -14,10 +14,12 @@ import PlusIcon from '../../assets/svg/PlusIcon.svg';
 import {PieChart} from "react-native-chart-kit";
 import {useAppNavigation} from "../../common/navigationHelper.ts";
 import AddAllocationModal from "./AddAllocationModal";
+import ModifyAllocationModal from "./ModifyAllocationModal";
 
 export default function HomeScreen() {
     const navigation = useAppNavigation()
     const [addAllocationModalVisible, setAddAllocationModalVisible] = useState(false);
+    const [modifyAllocationModalVisible, setModifyAllocationModalVisible] = useState(false);
 
     const allocations = [
         {
@@ -162,9 +164,10 @@ export default function HomeScreen() {
                                 key={allocation.id}
                                 className="bg-[#494949]/80 rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666]"
                                 onPress={() => {
-                                    navigation.navigate("SectionNavigator", {
-                                        screen: "AllocationDetails",
-                                    });
+                                    // navigation.navigate("SectionNavigator", {
+                                    //     screen: "AllocationDetails",
+                                    // });
+                                    setModifyAllocationModalVisible(true)
                                 }}
                             >
                                 <View
@@ -222,9 +225,18 @@ export default function HomeScreen() {
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
+
                 <AddAllocationModal
                     visible={addAllocationModalVisible}
                     onClose={() => setAddAllocationModalVisible(false)}
+                    onSave={() => {
+
+                    }}
+                />
+
+                <ModifyAllocationModal
+                    visible={modifyAllocationModalVisible}
+                    onClose={() => setModifyAllocationModalVisible(false)}
                     onSave={() => {
 
                     }}
