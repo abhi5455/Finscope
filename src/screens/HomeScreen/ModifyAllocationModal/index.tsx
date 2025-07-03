@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
     View,
     Text,
@@ -7,6 +7,9 @@ import {
     Modal, StatusBar, Pressable,
 } from 'react-native';
 import {Minus, PlusIcon} from "lucide-react-native";
+import TransactionIcon from '../../../assets/svg/TransactionGreenIcon.svg';
+import DeleteIcon from '../../../assets/svg/DeleteIcon.svg';
+import {useAppNavigation} from "../../../common/navigationHelper.ts";
 
 interface AddAllocationModalProps {
     visible: boolean;
@@ -15,16 +18,17 @@ interface AddAllocationModalProps {
 }
 
 const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
-                                                                   visible,
-                                                                   onClose,
-                                                                   onSave,
-                                                               }) => {
+                                                                      visible,
+                                                                      onClose,
+                                                                      onSave,
+                                                                  }) => {
     const [title, setTitle] = useState('');
     const [type, setType] = useState('');
     const [amount, setAmount] = useState('');
+    const navigation = useAppNavigation();
 
     const handleSave = () => {
-        onSave({ title, type, amount });
+        onSave({title, type, amount});
         // Reset form
         setTitle('');
         setType('');
@@ -42,9 +46,24 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
             <StatusBar backgroundColor={'#000'} barStyle={'light-content'}/>
             <Pressable className="flex-1 bg-[#545454]/80 bg-opacity-50 justify-end" onPress={onClose}>
                 <Pressable className="bg-secondary rounded-t-3xl px-6 py-8" onPress={(e) => e.stopPropagation()}>
-                    <Text className="text-white text-xl font-interSemiBold mb-8">
-                        Modify Allocation
-                    </Text>
+                    <View className="flex flex-row items-center justify-between mb-8">
+                        <Text className="text-white text-xl font-interSemiBold">
+                            Modify Allocation
+                        </Text>
+                        <View className="flex flex-row items-center justify-between gap-4">
+                            <TouchableOpacity onPress={()=>{
+                                onClose();
+                                navigation.navigate("SectionNavigator", {
+                                    screen: "AllocationDetails",
+                                });
+                            }}>
+                                <TransactionIcon/>
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+                                <DeleteIcon/>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
 
                     {/* Title Input */}
                     <View className="mb-4">
@@ -70,7 +89,8 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
 
                     {/* Amount to Add Input */}
                     <View className="mb-4 flex-row items-center justify-between gap-4">
-                        <TouchableOpacity className="flex justify-center items-center bg-[#9fafaf] rounded-lg self-stretch px-5">
+                        <TouchableOpacity
+                            className="flex justify-center items-center bg-[#9fafaf] rounded-lg self-stretch px-5">
                             <Minus size={15}/>
                         </TouchableOpacity>
                         <TextInput
@@ -80,14 +100,16 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
                             placeholderTextColor="#9ca3af"
                             className="flex-1 bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
                         />
-                        <TouchableOpacity className="flex justify-center items-center bg-[#9fafaf] rounded-lg self-stretch px-5">
+                        <TouchableOpacity
+                            className="flex justify-center items-center bg-[#9fafaf] rounded-lg self-stretch px-5">
                             <PlusIcon size={15}/>
                         </TouchableOpacity>
                     </View>
 
                     {/* Amount to Deduct Input */}
                     <View className="mb-4 flex-row items-center justify-between gap-4">
-                        <TouchableOpacity className="flex justify-center items-center bg-[#9fafaf] rounded-lg self-stretch px-5">
+                        <TouchableOpacity
+                            className="flex justify-center items-center bg-[#9fafaf] rounded-lg self-stretch px-5">
                             <Minus size={15}/>
                         </TouchableOpacity>
                         <TextInput
@@ -97,7 +119,8 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
                             placeholderTextColor="#9ca3af"
                             className="flex-1 bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
                         />
-                        <TouchableOpacity className="flex justify-center items-center bg-[#9fafaf] rounded-lg self-stretch px-5">
+                        <TouchableOpacity
+                            className="flex justify-center items-center bg-[#9fafaf] rounded-lg self-stretch px-5">
                             <PlusIcon size={15}/>
                         </TouchableOpacity>
                     </View>
