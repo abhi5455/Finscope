@@ -160,7 +160,7 @@ export default function HomeScreen() {
                         {allocations.map((allocation) => (
                             <TouchableOpacity
                                 key={allocation.id}
-                                className=" bg-[#494949] rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666]"
+                                className="bg-[#494949]/80 rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666]"
                                 onPress={() => {
                                     navigation.navigate("SectionNavigator", {
                                         screen: "AllocationDetails",

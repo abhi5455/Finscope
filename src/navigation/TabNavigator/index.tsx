@@ -12,6 +12,8 @@ import ProfileIcon from '../../assets/svg/ProfileIcon.svg'
 import ProfileIconFocused from '../../assets/svg/ProfileIconFocused.svg'
 import {useEffect, useState} from "react";
 import {getFocusedRouteNameFromRoute} from "@react-navigation/native";
+import AllTransactionScreen from "../../screens/AllTransactionScreen";
+import ProfileScreen from "../../screens/ProfileScreen";
 
 export default function TabNavigator() {
     const Tab = createBottomTabNavigator()
@@ -105,7 +107,7 @@ export default function TabNavigator() {
             />
             <Tab.Screen
                 name="TranscationScreen"
-                component={HomeScreen}
+                component={AllTransactionScreen}
                 options={({route}) => ({
                     tabBarLabel: () => null,
                     tabBarIcon: ({focused, color}) => {
@@ -129,7 +131,7 @@ export default function TabNavigator() {
             />
             <Tab.Screen
                 name="ProfileScreen"
-                component={HomeScreen}
+                component={ProfileScreen}
                 options={({route}) => ({
                     tabBarLabel: () => null,
                     tabBarIcon: ({focused, color}) => {

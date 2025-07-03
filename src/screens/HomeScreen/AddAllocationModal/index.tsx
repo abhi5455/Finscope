@@ -4,7 +4,7 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    Modal,
+    Modal, StatusBar, Pressable,
 } from 'react-native';
 
 interface AddAllocationModalProps {
@@ -35,11 +35,12 @@ const AddAllocationModal: React.FC<AddAllocationModalProps> = ({
         <Modal
             visible={visible}
             transparent={true}
-            animationType="fade"
+            animationType="slide"
             onRequestClose={onClose}
         >
-            <View className="flex-1 bg-gray-800/80 bg-opacity-50 justify-end">
-                <View className="bg-secondary rounded-t-3xl px-6 py-8">
+            <StatusBar backgroundColor={'#000'} barStyle={'light-content'}/>
+            <Pressable className="flex-1 bg-[#545454]/80 bg-opacity-50 justify-end" onPress={onClose}>
+                <Pressable className="bg-secondary rounded-t-3xl px-6 py-8" onPress={(e) => e.stopPropagation()}>
                     <Text className="text-white text-xl font-interSemiBold mb-8">
                         Add New Allocation
                     </Text>
@@ -51,7 +52,7 @@ const AddAllocationModal: React.FC<AddAllocationModalProps> = ({
                             onChangeText={setTitle}
                             placeholder="Title"
                             placeholderTextColor="#9ca3af"
-                            className="bg-transparent border border-gray-600 rounded-lg px-4 py-4 text-white font-interMedium text-base"
+                            className="bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
                         />
                     </View>
 
@@ -62,7 +63,7 @@ const AddAllocationModal: React.FC<AddAllocationModalProps> = ({
                             onChangeText={setType}
                             placeholder="Type of allocation (Eg: Savings, current)"
                             placeholderTextColor="#9ca3af"
-                            className="bg-transparent border border-gray-600 rounded-lg px-4 py-4 text-white font-interMedium text-base"
+                            className="bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
                         />
                     </View>
 
@@ -74,21 +75,21 @@ const AddAllocationModal: React.FC<AddAllocationModalProps> = ({
                             placeholder="Amount to allocate"
                             placeholderTextColor="#9ca3af"
                             keyboardType="numeric"
-                            className="bg-transparent border border-gray-600 rounded-lg px-4 py-4 text-white font-interMedium text-base"
+                            className="bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
                         />
                     </View>
 
                     {/* Save Button */}
                     <TouchableOpacity
                         onPress={handleSave}
-                        className="bg-green-500 rounded-lg py-4 items-center"
+                        className="bg-[#3d8262] rounded-lg py-4 items-center border-primary border-[1.5px]"
                     >
-                        <Text className="text-white text-lg font-interSemiBold">
+                        <Text className="text-primary text-lg font-interSemiBold">
                             Save
                         </Text>
                     </TouchableOpacity>
-                </View>
-            </View>
+                </Pressable>
+            </Pressable>
         </Modal>
     );
 };

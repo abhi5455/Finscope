@@ -3,6 +3,7 @@ import {Fragment, useState} from "react";
 import SectionNavigator from "../SectionNavigator";
 import TabNavigator from "../TabNavigator";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import SplashScreen from "../../screens/OnboardingScreens/SplashScreen.tsx";
 
 export const StackNavigator = () => {
     const Stack = createNativeStackNavigator()
@@ -10,6 +11,11 @@ export const StackNavigator = () => {
 
     return (
         <Stack.Navigator>
+            <Stack.Screen
+                name="SplashScreen"
+                options={{headerShown: false, gestureEnabled: false}}
+                component={SplashScreen}
+            />
             {isLoggedIn
                 ?
                 <Fragment>
