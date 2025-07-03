@@ -1,5 +1,5 @@
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {Dimensions, StyleSheet, Text, View} from "react-native";
+import {Dimensions, StyleSheet, View} from "react-native";
 import AnimIcon from "../../common/AnimIcon.tsx";
 import HomeScreen from "../../screens/HomeScreen";
 import HomeIcon from '../../assets/svg/HomeIcon.svg'
