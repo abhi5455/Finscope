@@ -7,7 +7,7 @@ export async function createNewAllocation(
     amount: string
 ): Promise<void> {
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {data: {user}} = await supabase.auth.getUser();
 
     const allocation = {
         title,
@@ -26,7 +26,7 @@ export async function createNewAllocation(
             type: 'error',
             text1: 'Error creating allocation:',
             text2: error.message || 'An unexpected error occurred.',
-            position:'bottom'
+            position: 'bottom'
         });
         throw error;
     }
@@ -34,22 +34,22 @@ export async function createNewAllocation(
     Toast.show({
         type: 'success',
         text1: 'New allocation created successfully',
-        position:'bottom'
+        position: 'bottom'
     });
 }
 
 export async function getAllAllocations(): Promise<any[]> {
-    const { data, error } = await supabase
+    const {data, error} = await supabase
         .from('allocations')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', {ascending: false});
 
     if (error) {
         Toast.show({
             type: 'error',
             text1: 'Error fetching allocations:',
             text2: error.message || 'An unexpected error occurred.',
-            position:'bottom'
+            position: 'bottom'
         });
         throw error;
     }
@@ -58,16 +58,16 @@ export async function getAllAllocations(): Promise<any[]> {
 }
 
 export async function countTotalAllocationAmount(): Promise<number> {
-    const { data, error } = await supabase
+    const {data, error} = await supabase
         .from('allocations')
-        .select('amount', { count: 'exact' });
+        .select('amount', {count: 'exact'});
 
     if (error) {
         Toast.show({
             type: 'error',
             text1: 'Error counting allocations:',
             text2: error.message || 'An unexpected error occurred.',
-            position:'bottom'
+            position: 'bottom'
         });
         throw error;
     }
@@ -76,7 +76,7 @@ export async function countTotalAllocationAmount(): Promise<number> {
 }
 
 export async function deleteAllocation(id: string): Promise<void> {
-    const { error } = await supabase
+    const {error} = await supabase
         .from('allocations')
         .delete()
         .eq('id', id);
@@ -86,7 +86,7 @@ export async function deleteAllocation(id: string): Promise<void> {
     }
 }
 
-export  async function updateAllocation(
+export async function updateAllocation(
     id: string,
     title: string,
     type: string,
@@ -94,7 +94,7 @@ export  async function updateAllocation(
     update_amount: string | null = null,
     remarks: string,
 ): Promise<void> {
-    const { error } = await supabase
+    const {error} = await supabase
         .from('allocations')
         .update({
             title,
@@ -102,8 +102,8 @@ export  async function updateAllocation(
         })
         .eq('id', id);
 
-    if(update_amount)
-    addTransactionToAllocation(id,update_amount, transaction_type, remarks)
+    if (update_amount)
+        addTransactionToAllocation(id, update_amount, transaction_type, remarks)
 
     if (error) {
         throw error;
@@ -117,7 +117,7 @@ export async function addTransactionToAllocation(
     transactionType: 'added' | 'deducted',
     remark?: string
 ): Promise<void> {
-    const { error } = await supabase
+    const {error} = await supabase
         .from('transactions')
         .insert({
             allocation_id: allocationId,
@@ -132,15 +132,36 @@ export async function addTransactionToAllocation(
 }
 
 export async function getTransactionsForAllocation(allocationId: string): Promise<any[]> {
-    const { data, error } = await supabase
+    const {data, error} = await supabase
         .from('transactions')
         .select('*')
         .eq('allocation_id', allocationId)
-        .order('created_at', { ascending: false });
+        .order('created_at', {ascending: false});
 
     if (error) {
         throw error;
     }
 
     return data || [];
+}
+
+export async function getAllTransactions(): Promise<any[]> {
+    const {data, error} = await supabase
+        .from('transactions')
+        .select(`*, allocations(title)`)
+        .order('created_at', {ascending: false});
+
+
+    if (error) {
+        throw error;
+    }
+
+    return (data ?? []).map(t => {
+        const { allocations, ...rest } = t;
+
+        return {
+            ...rest,
+            allocation_title: allocations?.title || ''
+        };
+    });
 }

@@ -30,7 +30,6 @@ export default function AllocationDetails() {
             .then((data) => {
                 setTransactions(data);
             })
-
     }, []);
 
     return (

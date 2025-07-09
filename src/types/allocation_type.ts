@@ -13,6 +13,7 @@ export interface IAllocation{
 export interface ITransaction{
     id: string;
     allocation_id: string;
+    allocation_title?: string;
     amount: number;
     remark?: string;
     transaction_type: "added" | "deducted";
