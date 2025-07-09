@@ -44,6 +44,15 @@ export const signUpWithEmailPassword = async (
 
     if (data?.user) {
         console.log("✅ Signup successful:", data.user);
+
+        // Add user metadata to profiles table
+        const {data: {user}} = await supabase.auth.getUser();
+        await supabase.from('profiles').insert({
+            id: user?.id,
+            email: user?.email,
+            display_name: name
+        });
+
         return { status: 'signed_up', user: data.user, session: data.session };
     }
 

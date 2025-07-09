@@ -19,8 +19,9 @@ import {
 } from "lucide-react-native";
 import {signOut} from "../../services/signInHelper.ts";
 import {useAppNavigation} from "../../common/navigationHelper.ts";
-import {getUserDetails} from "../../services/userServices.ts";
+import {getUserDetails, updateUserProfile} from "../../services/userServices.ts";
 import {useFocusEffect} from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 
 interface ProfileData {
     name: string;
@@ -40,19 +41,19 @@ const ProfileScreen: React.FC = () => {
 
     useFocusEffect(
         useCallback(() => {
-        getUserDetails()
-            .then((user) => {
-                console.log("User details fetched:", user);
-                if (user) {
-                    setProfile({
-                        name: user.name || "",
-                        email: user.email || ""
-                    })
-                }
-            })
-            .catch((error) => {
-                console.error("Error fetching user details:", error);
-            });
+            getUserDetails()
+                .then((user) => {
+                    console.log("User details fetched:", user);
+                    if (user) {
+                        setProfile({
+                            name: user.display_name || "",
+                            email: user.email || ""
+                        })
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching user details:", error);
+                });
             return () => {
 
             };
@@ -67,6 +68,23 @@ const ProfileScreen: React.FC = () => {
     const handleSave = (): void => {
         setProfile(editedProfile);
         setIsEditing(false);
+        updateUserProfile(editedProfile.name)
+            .then(() => {
+                Toast.show({
+                    type: 'success',
+                    text1: 'Profile updated successfully',
+                    position: 'bottom'
+                })
+            })
+            .catch((error) => {
+                console.error("Error updating profile:", error);
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error updating profile:',
+                    text2: error.message || 'An unexpected error occurred.',
+                    position: 'bottom'
+                })
+            });
     };
 
     const handleCancel = (): void => {
@@ -197,23 +215,12 @@ const ProfileScreen: React.FC = () => {
                                 Email
                             </Text>
                         </View>
-                        {isEditing ? (
-                            <TextInput
-                                value={editedProfile.email}
-                                onChangeText={(text) => setEditedProfile({...editedProfile, email: text})}
-                                className="bg-[#494949]/80 rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666] text-white font-interMedium"
-                                placeholderTextColor="#9CA3AF"
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                            />
-                        ) : (
-                            <View
-                                className="bg-[#494949]/80 rounded-lg p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666] text-white font-interMedium">
-                                <Text className="text-white font-interMedium">
-                                    {profile.email}
-                                </Text>
-                            </View>
-                        )}
+                        <View
+                            className="bg-[#494949]/80 rounded-lg p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666] text-white font-interMedium">
+                            <Text className={`${isEditing ? 'text-white opacity-30' : 'text-white'} font-interMedium`}>
+                                {profile.email}
+                            </Text>
+                        </View>
                     </View>
 
                     {/* Action Buttons */}
