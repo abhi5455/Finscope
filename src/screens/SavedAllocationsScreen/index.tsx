@@ -23,6 +23,8 @@ import {
 } from "../../services/allocationsService.ts";
 import {IAllocation} from "../../types/allocation_type.ts";
 import {format} from "date-fns";
+import AddAllocationModal from "../HomeScreen/AddAllocationModal";
+import ModifyAllocationModal from "../HomeScreen/ModifyAllocationModal";
 
 export default function SavedAllocationsScreen() {
     const navigation = useAppNavigation()
@@ -141,13 +143,13 @@ export default function SavedAllocationsScreen() {
                         </Text>
                         <MagicPencilIcon/>
                     </View>
-                    <TouchableOpacity onPress={() => {
-                        setAddAllocationModalVisible(true)
-                    }}>
-                        <Text className="text-primary text-md font-interMedium">
-                            + Add New
-                        </Text>
-                    </TouchableOpacity>
+                    {/*<TouchableOpacity onPress={() => {*/}
+                    {/*    setAddAllocationModalVisible(true)*/}
+                    {/*}}>*/}
+                    {/*    <Text className="text-primary text-md font-interMedium">*/}
+                    {/*        + Add New*/}
+                    {/*    </Text>*/}
+                    {/*</TouchableOpacity>*/}
                 </View>
                 <ScrollView className="flex-1 px-6">
                     {/* Allocations Section */}
@@ -220,21 +222,36 @@ export default function SavedAllocationsScreen() {
                                 </TouchableOpacity>
                             )
                         })}
+
                         {/* Add New Allocation Button */}
-                        <TouchableOpacity
-                            className="bg-[#363d3a] border-dashed border-[1.5px] border-[#666666] rounded-2xl px-4 py-8 items-center justify-center mt-4 mb-40"
-                            onPress={() => {
-                                setAddAllocationModalVisible(true)
-                            }}>
-                            <View className="flex flex-row items-center justify-center gap-2">
-                                <PlusIcon/>
-                                <Text className="text-primary text-base font-interSemiBold">
-                                    Add New Allocation
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
+                        {/*<TouchableOpacity*/}
+                        {/*    className="bg-[#363d3a] border-dashed border-[1.5px] border-[#666666] rounded-2xl px-4 py-8 items-center justify-center mt-4 mb-40"*/}
+                        {/*    onPress={() => {*/}
+                        {/*        setAddAllocationModalVisible(true)*/}
+                        {/*    }}>*/}
+                        {/*    <View className="flex flex-row items-center justify-center gap-2">*/}
+                        {/*        <PlusIcon/>*/}
+                        {/*        <Text className="text-primary text-base font-interSemiBold">*/}
+                        {/*            Add New Allocation*/}
+                        {/*        </Text>*/}
+                        {/*    </View>*/}
+                        {/*</TouchableOpacity>*/}
                     </View>
                 </ScrollView>
+
+                <AddAllocationModal
+                    visible={addAllocationModalVisible}
+                    onClose={() => setAddAllocationModalVisible(false)}
+                    onSave={() => {
+                    }}
+                />
+                <ModifyAllocationModal
+                    visible={modifyAllocationModalVisible}
+                    onClose={() => setModifyAllocationModalVisible(false)}
+                    onSave={() => {
+                    }}
+                    selectedAllocation={selectedAllocation}
+                />
             </LinearGradient>
         </SafeAreaView>
     );
