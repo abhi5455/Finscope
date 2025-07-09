@@ -1,28 +1,33 @@
-import React, {useEffect} from 'react';
+import React, {useCallback} from 'react';
 import {
     View,
     Text,
     ScrollView,
-    SafeAreaView, TouchableOpacity,
+    SafeAreaView,
 } from 'react-native';
 import {useAppNavigation} from "../../common/navigationHelper.ts";
 import {ITransaction} from "../../types/allocation_type.ts";
 import {getAllTransactions} from "../../services/allocationsService.ts";
 import {format} from "date-fns";
 import HandCoins from '../../assets/svg/HandCoins.svg'
-import MagicPencilIcon from "../../assets/svg/MagicPencilIcon.svg";
+import {useFocusEffect} from "@react-navigation/native";
 
 export default function AllTransactionScreen() {
     const navigation = useAppNavigation();
     const [transactions, setTransactions] = React.useState<ITransaction[] | null>(null);
 
-    useEffect(() => {
+    useFocusEffect(
+        useCallback(() => {
         getAllTransactions()
             .then((data) => {
                 console.log('All Transactions:', data);
                 setTransactions(data);
             })
-    }, []);
+            return () => {
+
+            };
+        }, [])
+    );
 
     return (
         <SafeAreaView className="flex-1 bg-secondary">

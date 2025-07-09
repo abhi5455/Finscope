@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
     View,
     Text,
@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import {
     User,
-    Phone,
     Mail,
     LogOut,
     Edit2,
@@ -20,8 +19,8 @@ import {
 } from "lucide-react-native";
 import {signOut} from "../../services/signInHelper.ts";
 import {useAppNavigation} from "../../common/navigationHelper.ts";
-import {supabase} from "../../services/supabaseClient.ts";
 import {getUserDetails} from "../../services/userServices.ts";
+import {useFocusEffect} from "@react-navigation/native";
 
 interface ProfileData {
     name: string;
@@ -39,9 +38,11 @@ const ProfileScreen: React.FC = () => {
     });
     const [editedProfile, setEditedProfile] = useState<ProfileData>(profile);
 
-    useEffect(() => {
+    useFocusEffect(
+        useCallback(() => {
         getUserDetails()
             .then((user) => {
+                console.log("User details fetched:", user);
                 if (user) {
                     setProfile({
                         name: user.name || "",
@@ -52,8 +53,11 @@ const ProfileScreen: React.FC = () => {
             .catch((error) => {
                 console.error("Error fetching user details:", error);
             });
+            return () => {
 
-    }, []);
+            };
+        }, [])
+    );
 
     const handleEdit = (): void => {
         setIsEditing(true);

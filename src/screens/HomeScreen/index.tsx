@@ -46,7 +46,7 @@ export default function HomeScreen() {
                     setTotalAllocationAmount(totalAmount);
                 })
             return () => {
-                console.log('Screen unfocused — cleanup if needed');
+
             };
         }, [])
     );
