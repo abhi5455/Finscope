@@ -14,6 +14,7 @@ import {useEffect, useState} from "react";
 import {getFocusedRouteNameFromRoute} from "@react-navigation/native";
 import AllTransactionScreen from "../../screens/AllTransactionScreen";
 import ProfileScreen from "../../screens/ProfileScreen";
+import SavedAllocationsScreen from "../../screens/SavedAllocationsScreen";
 
 export default function TabNavigator() {
     const Tab = createBottomTabNavigator()
@@ -82,8 +83,8 @@ export default function TabNavigator() {
                 })}
             />
             <Tab.Screen
-                name="SavedScreen"
-                component={HomeScreen}
+                name="SavedAllocationsScreen"
+                component={SavedAllocationsScreen}
                 options={({route}) => ({
                     tabBarLabel: () => null,
                     tabBarIcon: ({focused, color}) => {

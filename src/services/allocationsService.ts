@@ -39,13 +39,13 @@ export async function createNewAllocation(
 }
 
 export async function getAllAllocations(): Promise<any[]> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {data: {user}} = await supabase.auth.getUser();
 
-    const { data, error } = await supabase
+    const {data, error} = await supabase
         .from('allocations')
         .select('*')
         .eq('user_id', user?.id)
-        .order('created_at', { ascending: false });
+        .order('created_at', {ascending: false});
 
     if (error) {
         Toast.show({
@@ -60,11 +60,85 @@ export async function getAllAllocations(): Promise<any[]> {
     return data || [];
 }
 
+export async function saveAllocation(id: string): Promise<void> {
+    const {data: {user}} = await supabase.auth.getUser();
+
+    const {error} = await supabase
+        .from('allocations')
+        .update({is_saved: true})
+        .eq('id', id)
+        .eq('user_id', user?.id);
+
+    if (error) {
+        Toast.show({
+            type: 'error',
+            text1: 'Error saving allocation:',
+            text2: error.message || 'An unexpected error occurred.',
+            position: 'bottom'
+        });
+        throw error;
+    }
+
+    Toast.show({
+        type: 'success',
+        text1: 'Allocation saved successfully',
+        position: 'bottom'
+    });
+}
+
+export async function unsaveAllocation(id: string): Promise<void> {
+    const {data: {user}} = await supabase.auth.getUser();
+
+    const {error} = await supabase
+        .from('allocations')
+        .update({is_saved: false})
+        .eq('id', id)
+        .eq('user_id', user?.id);
+
+    if (error) {
+        Toast.show({
+            type: 'error',
+            text1: 'Error unsaving allocation:',
+            text2: error.message || 'An unexpected error occurred.',
+            position: 'bottom'
+        });
+        throw error;
+    }
+
+    Toast.show({
+        type: 'success',
+        text1: 'Allocation unsaved successfully',
+        position: 'bottom'
+    });
+}
+
+export async function getSavedAllocations(): Promise<any[]> {
+    const {data: {user}} = await supabase.auth.getUser();
+
+    const {data, error} = await supabase
+        .from('allocations')
+        .select('*')
+        .eq('user_id', user?.id)
+        .eq('is_saved', true)
+        .order('created_at', {ascending: false});
+
+    if (error) {
+        Toast.show({
+            type: 'error',
+            text1: 'Error fetching saved allocations:',
+            text2: error.message || 'An unexpected error occurred.',
+            position: 'bottom'
+        });
+        throw error;
+    }
+
+    return data || [];
+}
 
 export async function countTotalAllocationAmount(): Promise<number> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {data: {user}} = await supabase.auth.getUser();
 
-    const { data, error } = await supabase
+    const {data, error} = await supabase
         .from('allocations')
         .select('amount')
         .eq('user_id', user?.id);
@@ -86,11 +160,11 @@ export async function countTotalAllocationAmount(): Promise<number> {
 export async function deleteAllocation(id: string): Promise<void> {
     // const { data: { user } } = await supabase.auth.getUser();
 
-    const { error } = await supabase
+    const {error} = await supabase
         .from('allocations')
         .delete()
         .eq('id', id)
-        // .eq('user_id', user?.id);
+    // .eq('user_id', user?.id);
 
     if (error) throw error;
 }
@@ -103,11 +177,11 @@ export async function updateAllocation(
     update_amount: string | null = null,
     remarks: string
 ): Promise<void> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {data: {user}} = await supabase.auth.getUser();
 
-    const { error } = await supabase
+    const {error} = await supabase
         .from('allocations')
-        .update({ title, type })
+        .update({title, type})
         .eq('id', id)
         .eq('user_id', user?.id);
 
@@ -125,7 +199,7 @@ export async function addTransactionToAllocation(
     remark?: string
 ): Promise<void> {
 
-    const { error } = await supabase
+    const {error} = await supabase
         .from('transactions')
         .insert({
             allocation_id: allocationId,
@@ -139,11 +213,11 @@ export async function addTransactionToAllocation(
 
 export async function getTransactionsForAllocation(allocationId: string): Promise<any[]> {
 
-    const { data, error } = await supabase
+    const {data, error} = await supabase
         .from('transactions')
         .select('*')
         .eq('allocation_id', allocationId)
-        .order('created_at', { ascending: false });
+        .order('created_at', {ascending: false});
 
     if (error) throw error;
 
@@ -151,21 +225,25 @@ export async function getTransactionsForAllocation(allocationId: string): Promis
 }
 
 export async function getAllTransactions(): Promise<any[]> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {data: {user}} = await supabase.auth.getUser();
 
-    const { data, error } = await supabase
+    const {data, error} = await supabase
         .from('transactions')
-        .select(`*, allocations(title)`)
-        .eq('allocations.user_id', user?.id)
-        .order('created_at', { ascending: false });
+        .select(`
+                *,
+                allocations (
+                    title,
+                    user_id
+                )
+        `)
+        .order('created_at', {ascending: false});
 
     if (error) throw error;
 
-    return (data ?? []).map(t => {
-        const { allocations, ...rest } = t;
-        return {
-            ...rest,
-            allocation_title: allocations?.title || ''
-        };
-    });
+    return (data ?? [])
+        .filter(t => t.allocations?.user_id === user?.id)
+        .map(t => ({
+            ...t,
+            allocation_title: t.allocations?.title || ''
+        }));
 }

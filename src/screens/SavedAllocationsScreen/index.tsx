@@ -14,19 +14,17 @@ import Pattern from '../../assets/svg/Pattern1.svg';
 import PlusIcon from '../../assets/svg/PlusIcon.svg';
 import {PieChart} from "react-native-chart-kit";
 import {useAppNavigation} from "../../common/navigationHelper.ts";
-import AddAllocationModal from "./AddAllocationModal";
-import ModifyAllocationModal from "./ModifyAllocationModal";
 import {useFocusEffect} from "@react-navigation/native";
 import {
     countTotalAllocationAmount,
-    getAllAllocations,
+    getAllAllocations, getSavedAllocations,
     saveAllocation,
     unsaveAllocation
 } from "../../services/allocationsService.ts";
 import {IAllocation} from "../../types/allocation_type.ts";
 import {format} from "date-fns";
 
-export default function HomeScreen() {
+export default function SavedAllocationsScreen() {
     const navigation = useAppNavigation()
     const [addAllocationModalVisible, setAddAllocationModalVisible] = useState(false);
     const [modifyAllocationModalVisible, setModifyAllocationModalVisible] = useState(false);
@@ -80,7 +78,7 @@ export default function HomeScreen() {
 
     useFocusEffect(
         useCallback(() => {
-            getAllAllocations()
+            getSavedAllocations()
                 .then((res) => {
                     console.log(res)
                     setAllocations(res);
@@ -139,7 +137,7 @@ export default function HomeScreen() {
                 <View className="flex-row items-center justify-between px-6 mt-3 mb-1">
                     <View className="flex-row items-center">
                         <Text className="text-white text-lg font-interSemiBold mr-2">
-                            Allocations
+                            Saved Allocations
                         </Text>
                         <MagicPencilIcon/>
                     </View>
@@ -237,19 +235,6 @@ export default function HomeScreen() {
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
-                <AddAllocationModal
-                    visible={addAllocationModalVisible}
-                    onClose={() => setAddAllocationModalVisible(false)}
-                    onSave={() => {
-                    }}
-                />
-                <ModifyAllocationModal
-                    visible={modifyAllocationModalVisible}
-                    onClose={() => setModifyAllocationModalVisible(false)}
-                    onSave={() => {
-                    }}
-                    selectedAllocation={selectedAllocation}
-                />
             </LinearGradient>
         </SafeAreaView>
     );
