@@ -229,7 +229,7 @@ const ProfileScreen: React.FC = () => {
                             <View className="flex-row gap-x-3 mb-3">
                                 <TouchableOpacity
                                     onPress={handleSave}
-                                    className="flex-1 bg-emerald-600 rounded-md py-3 px-4 flex-row items-center justify-center"
+                                    className="flex-1 bg-emerald-600 rounded-md py-4 px-4 flex-row items-center justify-center"
                                     activeOpacity={0.8}
                                 >
                                     <Save size={16} color="#FFFFFF"/>
@@ -237,7 +237,7 @@ const ProfileScreen: React.FC = () => {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={handleCancel}
-                                    className="flex-1 border border-gray-600 rounded-md py-3 px-4 flex-row items-center justify-center"
+                                    className="flex-1 border border-gray-600 rounded-md py-4 px-4 flex-row items-center justify-center"
                                     activeOpacity={0.8}
                                 >
                                     <X size={16} color="#D1D5DB"/>
@@ -247,7 +247,7 @@ const ProfileScreen: React.FC = () => {
                         ) : (
                             <TouchableOpacity
                                 onPress={handleEdit}
-                                className="bg-emerald-600 rounded-md py-3 px-4 flex-row items-center justify-center mb-3"
+                                className="bg-emerald-600 rounded-md py-4 px-4 flex-row items-center justify-center mb-3"
                                 activeOpacity={0.8}
                             >
                                 <Edit2 size={16} color="#FFFFFF"/>
