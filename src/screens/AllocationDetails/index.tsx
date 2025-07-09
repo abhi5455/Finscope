@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
     View,
     Text,
@@ -8,68 +8,36 @@ import {
 } from 'react-native';
 import BackIcon from '../../assets/svg/BackIcon.svg';
 import {useAppNavigation} from "../../common/navigationHelper.ts";
+import {IAllocation, ITransaction} from "../../types/allocation_type.ts";
+import {RouteProp, useRoute} from "@react-navigation/native";
+import {getTransactionsForAllocation} from "../../services/allocationsService.ts";
+import Toast from "react-native-toast-message";
+import {format} from "date-fns";
+
+interface RouteParams {
+    allocation: IAllocation
+}
 
 export default function AllocationDetails() {
+    const route = useRoute<RouteProp<{ AllocationDetails: RouteParams }, 'AllocationDetails'>>();
+    const {allocation} = route.params;
     const navigation = useAppNavigation();
 
-    const transactions = [
-        {
-            id: 1,
-            amount: '+125455.00',
-            description: 'Lorem ipsum dolor sit amet',
-            date: '15 Nov, 2025',
-            isPositive: true,
-        },
-        {
-            id: 2,
-            amount: '-1500.00',
-            description: 'Lorem ipsum dolor sit amet',
-            date: '15 Nov, 2025',
-            isPositive: false,
-        },
-        {
-            id: 3,
-            amount: '-1500.00',
-            description: 'Lorem ipsum dolor sit amet',
-            date: '15 Nov, 2025',
-            isPositive: false,
-        },
-        {
-            id: 4,
-            amount: '-1500.00',
-            description: 'Lorem ipsum dolor sit amet',
-            date: '15 Nov, 2025',
-            isPositive: false,
-        },
-        {
-            id: 5,
-            amount: '+125455.00',
-            description: 'Lorem ipsum dolor sit amet',
-            date: '15 Nov, 2025',
-            isPositive: true,
-        },
-        {
-            id: 6,
-            amount: '+125455.00',
-            description: 'Lorem ipsum dolor sit amet',
-            date: '15 Nov, 2025',
-            isPositive: true,
-        },
-        {
-            id: 7,
-            amount: '+125455.00',
-            description: 'Lorem ipsum dolor sit amet',
-            date: '15 Nov, 2025',
-            isPositive: true,
-        },
-        {
-            id: 8,
-            amount: '+125455.00',
-            description: 'Lorem ipsum dolor sit amet',
-            date: '15 Nov, 2025',
-            isPositive: true,
-        },
-    ];
+    const [transactions, setTransactions] = React.useState<ITransaction[] | null>(null);
+
+    useEffect(() => {
+        getTransactionsForAllocation(allocation.id)
+            .then((data) => {
+                console.log('Transactions:', data);
+                setTransactions(data);
+                Toast.show({
+                    type: 'success',
+                    text1: data.toString(),
+                    position: 'bottom'
+                })
+            })
+
+    }, []);
 
     return (
         <SafeAreaView className="flex-1 bg-secondary">
@@ -79,33 +47,33 @@ export default function AllocationDetails() {
                     <BackIcon/>
                 </TouchableOpacity>
                 <Text className="text-white text-xl font-interBold flex-1 text-left">
-                    National bank Savings
+                    {allocation.title}
                 </Text>
             </View>
 
             {/* Transaction List */}
             <ScrollView className="flex-1 px-7">
-                {transactions.map((transaction, index) => (
+                {transactions?.map((transaction, index) => (
                     <View key={transaction.id}>
                         <View className="py-4">
                             <View className="flex-row items-start justify-between mb-2">
                                 <Text
                                     className={`text-lg font-interSemiBold ${
-                                        transaction.isPositive ? 'text-green-400' : 'text-red-400'
+                                        transaction.transaction_type === 'added' ? 'text-green-400' : 'text-red-400'
                                     }`}
                                 >
-                                    {transaction.amount}
+                                    {transaction.transaction_type === 'added' ? '+' : '-'}{transaction.amount}
                                 </Text>
                                 <Text className="text-gray-400 text-sm font-interMedium">
-                                    {transaction.date}
+                                    {transaction?.created_at && format(transaction.created_at, 'dd MMM, yyyy')}
                                 </Text>
                             </View>
                             <Text className="text-gray-400 text-sm font-interMedium">
-                                {transaction.description}
+                                {transaction.remark}
                             </Text>
                         </View>
                         {index < transactions.length - 1 && (
-                            <View className="h-px bg-[#494949]" />
+                            <View className="h-px bg-[#494949]"/>
                         )}
                     </View>
                 ))}

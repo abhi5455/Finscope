@@ -11,7 +11,7 @@ import TransactionIcon from '../../../assets/svg/TransactionGreenIcon.svg';
 import DeleteIcon from '../../../assets/svg/DeleteIcon.svg';
 import {useAppNavigation} from "../../../common/navigationHelper.ts";
 import {IAllocation} from "../../../types/allocation_type.ts";
-import {createNewAllocation, deleteAllocation, updateAllocation} from "../../../services/allocationsService.ts";
+import {deleteAllocation, updateAllocation} from "../../../services/allocationsService.ts";
 import Toast from "react-native-toast-message";
 
 interface AddAllocationModalProps {
@@ -78,6 +78,9 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
                                 onClose();
                                 navigation.navigate("SectionNavigator", {
                                     screen: "AllocationDetails",
+                                    params: {
+                                        allocation: selectedAllocation
+                                    }
                                 });
                             }}>
                                 <TransactionIcon/>

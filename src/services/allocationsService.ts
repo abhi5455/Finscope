@@ -130,3 +130,17 @@ export async function addTransactionToAllocation(
         throw error;
     }
 }
+
+export async function getTransactionsForAllocation(allocationId: string): Promise<any[]> {
+    const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('allocation_id', allocationId)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        throw error;
+    }
+
+    return data || [];
+}
