@@ -39,10 +39,13 @@ export async function createNewAllocation(
 }
 
 export async function getAllAllocations(): Promise<any[]> {
-    const {data, error} = await supabase
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { data, error } = await supabase
         .from('allocations')
         .select('*')
-        .order('created_at', {ascending: false});
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false });
 
     if (error) {
         Toast.show({
@@ -57,10 +60,14 @@ export async function getAllAllocations(): Promise<any[]> {
     return data || [];
 }
 
+
 export async function countTotalAllocationAmount(): Promise<number> {
-    const {data, error} = await supabase
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { data, error } = await supabase
         .from('allocations')
-        .select('amount', {count: 'exact'});
+        .select('amount')
+        .eq('user_id', user?.id);
 
     if (error) {
         Toast.show({
@@ -72,18 +79,20 @@ export async function countTotalAllocationAmount(): Promise<number> {
         throw error;
     }
 
-    return data.reduce((total, allocation) => total + allocation.amount, 0);
+    return (data ?? []).reduce((total, allocation) => total + allocation.amount, 0);
 }
 
+
 export async function deleteAllocation(id: string): Promise<void> {
-    const {error} = await supabase
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { error } = await supabase
         .from('allocations')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('user_id', user?.id);
 
-    if (error) {
-        throw error;
-    }
+    if (error) throw error;
 }
 
 export async function updateAllocation(
@@ -92,23 +101,21 @@ export async function updateAllocation(
     type: string,
     transaction_type: 'added' | 'deducted',
     update_amount: string | null = null,
-    remarks: string,
+    remarks: string
 ): Promise<void> {
-    const {error} = await supabase
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { error } = await supabase
         .from('allocations')
-        .update({
-            title,
-            type,
-        })
-        .eq('id', id);
+        .update({ title, type })
+        .eq('id', id)
+        .eq('user_id', user?.id);
 
-    if (update_amount)
-        addTransactionToAllocation(id, update_amount, transaction_type, remarks)
+    if (error) throw error;
 
-    if (error) {
-        throw error;
+    if (update_amount) {
+        await addTransactionToAllocation(id, update_amount, transaction_type, remarks);
     }
-
 }
 
 export async function addTransactionToAllocation(
@@ -117,48 +124,49 @@ export async function addTransactionToAllocation(
     transactionType: 'added' | 'deducted',
     remark?: string
 ): Promise<void> {
-    const {error} = await supabase
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { error } = await supabase
         .from('transactions')
         .insert({
             allocation_id: allocationId,
             amount: parseFloat(amount),
             transaction_type: transactionType,
-            remark
+            remark,
+            user_id: user?.id
         });
 
-    if (error) {
-        throw error;
-    }
+    if (error) throw error;
 }
 
 export async function getTransactionsForAllocation(allocationId: string): Promise<any[]> {
-    const {data, error} = await supabase
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { data, error } = await supabase
         .from('transactions')
         .select('*')
         .eq('allocation_id', allocationId)
-        .order('created_at', {ascending: false});
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false });
 
-    if (error) {
-        throw error;
-    }
+    if (error) throw error;
 
     return data || [];
 }
 
 export async function getAllTransactions(): Promise<any[]> {
-    const {data, error} = await supabase
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { data, error } = await supabase
         .from('transactions')
         .select(`*, allocations(title)`)
-        .order('created_at', {ascending: false});
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false });
 
-
-    if (error) {
-        throw error;
-    }
+    if (error) throw error;
 
     return (data ?? []).map(t => {
         const { allocations, ...rest } = t;
-
         return {
             ...rest,
             allocation_title: allocations?.title || ''

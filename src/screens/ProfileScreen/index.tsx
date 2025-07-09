@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     View,
     Text,
@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     ScrollView,
     SafeAreaView,
+    Modal,
 } from 'react-native';
 import {
     User,
@@ -15,25 +16,44 @@ import {
     Edit2,
     Save,
     X,
+    AlertTriangle,
 } from "lucide-react-native";
 import {signOut} from "../../services/signInHelper.ts";
 import {useAppNavigation} from "../../common/navigationHelper.ts";
+import {supabase} from "../../services/supabaseClient.ts";
+import {getUserDetails} from "../../services/userServices.ts";
 
 interface ProfileData {
     name: string;
-    phone: string;
+    phone?: string;
     email: string;
 }
 
 const ProfileScreen: React.FC = () => {
     const navigation = useAppNavigation();
     const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [showLogoutModal, setShowLogoutModal] = useState<boolean>(false);
     const [profile, setProfile] = useState<ProfileData>({
         name: "John Doe",
-        phone: "+1 (555) 123-4567",
         email: "john.doe@example.com",
     });
     const [editedProfile, setEditedProfile] = useState<ProfileData>(profile);
+
+    useEffect(() => {
+        getUserDetails()
+            .then((user) => {
+                if (user) {
+                    setProfile({
+                        name: user.name || "",
+                        email: user.email || ""
+                    })
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching user details:", error);
+            });
+
+    }, []);
 
     const handleEdit = (): void => {
         setIsEditing(true);
@@ -50,6 +70,26 @@ const ProfileScreen: React.FC = () => {
         setIsEditing(false);
     };
 
+    const handleLogoutPress = (): void => {
+        setShowLogoutModal(true);
+    };
+
+    const handleLogoutConfirm = (): void => {
+        setShowLogoutModal(false);
+        signOut()
+            .then(() => {
+                navigation.goBack();
+                navigation.navigate("AuthenticationStack");
+            })
+            .catch((err) => {
+                console.error("Logout failed:", err.message);
+            });
+    };
+
+    const handleLogoutCancel = (): void => {
+        setShowLogoutModal(false);
+    };
+
     const getInitials = (name: string): string => {
         return name
             .split(" ")
@@ -60,8 +100,21 @@ const ProfileScreen: React.FC = () => {
 
     return (
         <SafeAreaView className="flex-1 bg-secondary">
-            <ScrollView className="flex-1 px-4 py-6">
+            {/* Header with Logout Button */}
+            <View className="flex-row justify-between items-center px-4 py-4">
+                <Text className="text-xl font-interSemiBold text-white">
+                    {isEditing ? "Edit Profile" : "Profile"}
+                </Text>
+                <TouchableOpacity
+                    onPress={handleLogoutPress}
+                    className="p-2 rounded-lg border border-red-600/30"
+                    activeOpacity={0.8}
+                >
+                    <LogOut size={18} color="#F87171"/>
+                </TouchableOpacity>
+            </View>
 
+            <ScrollView className="flex-1 px-4 py-6">
                 {/* Profile Card */}
                 <View className="rounded-xl p-4 mb-6">
                     {/* Avatar Section */}
@@ -90,12 +143,12 @@ const ProfileScreen: React.FC = () => {
                             <TextInput
                                 value={editedProfile.name}
                                 onChangeText={(text) => setEditedProfile({...editedProfile, name: text})}
-                                className="bg-[#494949]/80 rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666]  text-white font-interMedium"
+                                className="bg-[#494949]/80 rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666] text-white font-interMedium"
                                 placeholderTextColor="#9CA3AF"
                             />
                         ) : (
                             <View
-                                className="bg-[#494949]/80 rounded-lg p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666]  text-white font-interMedium">
+                                className="bg-[#494949]/80 rounded-lg p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666] text-white font-interMedium">
                                 <Text className="text-white font-interMedium">
                                     {profile.name}
                                 </Text>
@@ -103,33 +156,32 @@ const ProfileScreen: React.FC = () => {
                         )}
                     </View>
 
-                    {/* Phone Field */}
-                    <View className="mb-4">
-                        <View className="flex-row items-center mb-2">
-                            <View className="w-4 h-4 mr-2">
-                                <Phone size={16} color="#D1D5DB"/>
-                            </View>
-                            <Text className="text-sm font-interMedium text-gray-300">
-                                Phone
-                            </Text>
-                        </View>
-                        {isEditing ? (
-                            <TextInput
-                                value={editedProfile.phone}
-                                onChangeText={(text) => setEditedProfile({...editedProfile, phone: text})}
-                                className="bg-[#494949]/80 rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666]  text-white font-interMedium"
-                                placeholderTextColor="#9CA3AF"
-                                keyboardType="phone-pad"
-                            />
-                        ) : (
-                            <View
-                                className="bg-[#494949]/80 rounded-lg p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666]  text-white font-interMedium">
-                                <Text className="text-white font-interMedium">
-                                    {profile.phone}
-                                </Text>
-                            </View>
-                        )}
-                    </View>
+                    {/*/!* Phone Field *!/*/}
+                    {/*<View className="mb-4">*/}
+                    {/*    <View className="flex-row items-center mb-2">*/}
+                    {/*        <View className="w-4 h-4 mr-2">*/}
+                    {/*            <Phone size={16} color="#D1D5DB"/>*/}
+                    {/*        </View>*/}
+                    {/*        <Text className="text-sm font-interMedium text-gray-300">*/}
+                    {/*            Phone*/}
+                    {/*        </Text>*/}
+                    {/*    </View>*/}
+                    {/*    {isEditing ? (*/}
+                    {/*        <TextInput*/}
+                    {/*            value={editedProfile.phone}*/}
+                    {/*            onChangeText={(text) => setEditedProfile({...editedProfile, phone: text})}*/}
+                    {/*            className="bg-[#494949]/80 rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666] text-white font-interMedium"*/}
+                    {/*            placeholderTextColor="#9CA3AF"*/}
+                    {/*            keyboardType="phone-pad"*/}
+                    {/*        />*/}
+                    {/*    ) : (*/}
+                    {/*        <View className="bg-[#494949]/80 rounded-lg p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666] text-white font-interMedium">*/}
+                    {/*            <Text className="text-white font-interMedium">*/}
+                    {/*                {profile.phone}*/}
+                    {/*            </Text>*/}
+                    {/*        </View>*/}
+                    {/*    )}*/}
+                    {/*</View>*/}
 
                     {/* Email Field */}
                     <View className="mb-6">
@@ -145,14 +197,14 @@ const ProfileScreen: React.FC = () => {
                             <TextInput
                                 value={editedProfile.email}
                                 onChangeText={(text) => setEditedProfile({...editedProfile, email: text})}
-                                className="bg-[#494949]/80 rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666]  text-white font-interMedium"
+                                className="bg-[#494949]/80 rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666] text-white font-interMedium"
                                 placeholderTextColor="#9CA3AF"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                             />
                         ) : (
                             <View
-                                className="bg-[#494949]/80 rounded-lg p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666]  text-white font-interMedium">
+                                className="bg-[#494949]/80 rounded-lg p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666] text-white font-interMedium">
                                 <Text className="text-white font-interMedium">
                                     {profile.email}
                                 </Text>
@@ -191,27 +243,59 @@ const ProfileScreen: React.FC = () => {
                                 <Text className="text-white font-interSemiBold ml-2">Edit Profile</Text>
                             </TouchableOpacity>
                         )}
-
-                        <TouchableOpacity
-                            onPress={() => {
-                                signOut()
-                                    .then(() => {
-                                        navigation.goBack()
-                                        navigation.navigate("AuthenticationStack");
-                                    })
-                                    .catch((err) => {
-                                        console.error("Logout failed:", err.message);
-                                    });
-                            }
-                            }
-                            className="border border-red-600 rounded-md py-3 px-4 flex-row items-center justify-center"
-                        >
-                            <LogOut size={16} color="#F87171"/>
-                            <Text className="text-red-400 font-interSemiBold ml-2">Logout</Text>
-                        </TouchableOpacity>
                     </View>
                 </View>
             </ScrollView>
+
+            {/* Logout Confirmation Modal */}
+            <Modal
+                visible={showLogoutModal}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={handleLogoutCancel}
+            >
+                <View className="flex-1 bg-black/60 justify-center items-center px-6">
+                    <View className="bg-secondary rounded-2xl p-6 w-full border-0 border-[#78797a]">
+                        {/* Icon */}
+                        <View className="items-center mb-4">
+                            <View className="w-16 h-16 bg-red-600/20 rounded-full items-center justify-center mb-3">
+                                <AlertTriangle size={24} color="#F87171"/>
+                            </View>
+                        </View>
+
+                        {/* Title */}
+                        <Text className="text-xl font-interSemiBold text-white text-center mb-2">
+                            Confirm Logout
+                        </Text>
+
+                        {/* Message */}
+                        <Text className="text-gray-300/70 font-interMedium text-center mb-6 leading-5">
+                            Are you sure you want to logout? You'll need to sign in again to access your account.
+                        </Text>
+
+                        {/* Buttons */}
+                        <View className="flex flex-col gap-y-4">
+                            <TouchableOpacity
+                                onPress={handleLogoutConfirm}
+                                className="bg-red-600 rounded-md py-4 px-4 flex-row items-center justify-center"
+                                activeOpacity={0.8}
+                            >
+                                <LogOut size={16} color="#FFFFFF"/>
+                                <Text className="text-white font-interSemiBold ml-2">Yes, Logout</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={handleLogoutCancel}
+                                className="border border-gray-600 rounded-md py-4 px-4 flex-row items-center justify-center"
+                                activeOpacity={0.8}
+                            >
+                                <X size={16} color="#D1D5DB"/>
+                                <Text className="text-gray-300 font-interSemiBold ml-2">Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 };

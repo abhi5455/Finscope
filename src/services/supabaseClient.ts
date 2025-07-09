@@ -25,8 +25,20 @@ export const checkSignedUpWithEmailPassword = async (email: string, password: st
     return signUpError?.message === 'User already registered';
 }
 
-export const signUpWithEmailPassword = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+export const signUpWithEmailPassword = async (
+    name: string,
+    email: string,
+    password: string
+) => {
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+            data: {
+                name,
+            }
+        }
+    });
 
     console.log("🔷 Signup response:", { data, error });
 
@@ -40,6 +52,7 @@ export const signUpWithEmailPassword = async (email: string, password: string) =
         throw error;
     }
 };
+
 
 export const signInWithEmailPassword = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });

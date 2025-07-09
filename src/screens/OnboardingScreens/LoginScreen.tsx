@@ -53,8 +53,8 @@ const LoginScreen: React.FC = () => {
                                     value={name}
                                     onChangeText={setName}
                                     placeholder="Enter your full name"
-                                    placeholderTextColor="#6B7280"
-                                    className="bg-gray-700 text-white text-base font-interMedium px-4 py-4 rounded-xl border border-gray-600 focus:border-green-400"
+                                    placeholderTextColor="#666666"
+                                    className="bg-[#494949]/80 text-white text-base font-interMedium px-4 py-4 rounded-xl  border-[1px] border-[#666666]"
                                     autoCapitalize="words"
                                     autoComplete="name"
                                 />
@@ -86,8 +86,8 @@ const LoginScreen: React.FC = () => {
                                 value={email}
                                 onChangeText={setEmail}
                                 placeholder="Enter your email address"
-                                placeholderTextColor="#6B7280"
-                                className="bg-gray-700 text-white text-base font-interMedium px-4 py-4 rounded-xl border border-gray-600 focus:border-green-400"
+                                placeholderTextColor="#666666"
+                                className="bg-[#494949]/80 text-white text-base font-interMedium px-4 py-4 rounded-xl  border-[1px] border-[#666666]"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 autoComplete="email"
@@ -103,8 +103,8 @@ const LoginScreen: React.FC = () => {
                                 value={password}
                                 onChangeText={setPassword}
                                 placeholder="Enter your email address"
-                                placeholderTextColor="#6B7280"
-                                className="bg-gray-700 text-white text-base font-interMedium px-4 py-4 rounded-xl border border-gray-600 focus:border-green-400"
+                                placeholderTextColor="#666666"
+                                className="bg-[#494949]/80 text-white text-base font-interMedium px-4 py-4 rounded-xl  border-[1px] border-[#666666]"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 autoComplete="email"
@@ -125,7 +125,7 @@ const LoginScreen: React.FC = () => {
                                         console.error("Login error:", err.message);
                                     });
                             } else {
-                                signUpWithEmailPassword(email, password)
+                                signUpWithEmailPassword(name, email, password)
                                     .then(() => {
                                         navigation.goBack()
                                         navigation.navigate("TabNavigator");
@@ -136,10 +136,10 @@ const LoginScreen: React.FC = () => {
                             }
 
                         }}
-                        className="bg-green-400 py-4 rounded-xl mt-8 active:bg-green-500"
+                        className="bg-primary py-4 rounded-xl mt-8 active:bg-green-500"
                         activeOpacity={0.8}
                     >
-                        <Text className="text-gray-800 text-base font-interSemiBold text-center">
+                        <Text className="text-secondary text-base font-interSemiBold text-center">
                             Continue
                         </Text>
                     </TouchableOpacity>
@@ -153,7 +153,7 @@ const LoginScreen: React.FC = () => {
                             <TouchableOpacity onPress={() => {
                                 setToSignIn(!toSignIn);
                             }}>
-                                <Text className="text-green-400 text-sm font-interSemiBold">
+                                <Text className="text-primary text-sm font-interSemiBold">
                                     {toSignIn ? 'Sign Up' : 'Sign In'}
                                 </Text>
                             </TouchableOpacity>
