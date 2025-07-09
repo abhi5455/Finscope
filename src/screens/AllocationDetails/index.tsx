@@ -28,13 +28,7 @@ export default function AllocationDetails() {
     useEffect(() => {
         getTransactionsForAllocation(allocation.id)
             .then((data) => {
-                console.log('Transactions:', data);
                 setTransactions(data);
-                Toast.show({
-                    type: 'success',
-                    text1: data.toString(),
-                    position: 'bottom'
-                })
             })
 
     }, []);
