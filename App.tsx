@@ -1,3 +1,4 @@
+import 'react-native-url-polyfill/auto';
 import "./global.css"
 import {SafeAreaView} from "react-native";
 import {NavigationContainer} from "@react-navigation/native";

@@ -1,0 +1,172 @@
+import React, {useState} from 'react';
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    SafeAreaView,
+    StatusBar,
+    KeyboardAvoidingView,
+    Platform,
+} from 'react-native';
+import FinscopeLogo from '../../assets/svg/FinscopeLogo.svg'
+import {signInWithEmailPassword, signUpWithEmailPassword} from "../../services/supabaseClient.ts";
+import {useAppNavigation} from "../../common/navigationHelper.ts";
+
+const LoginScreen: React.FC = () => {
+    const navigation = useAppNavigation();
+    const [toSignIn, setToSignIn] = useState<boolean>(true);
+    const [name, setName] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+
+    return (
+        <SafeAreaView className="flex-1 bg-secondary">
+            <StatusBar barStyle="light-content" backgroundColor="#282828"/>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                className="flex-1"
+            >
+                <View className="flex-1 px-6 pt-16">
+                    {/* Logo/Icon Section */}
+                    <View className="items-center mb-12">
+                        <View className="items-center mb-5">
+                            <FinscopeLogo height={75}/>
+                        </View>
+                        <Text className="text-white text-2xl font-interSemiBold text-center">
+                            {toSignIn ? 'Welcome Back' : 'Create an Account'}
+                        </Text>
+                        <Text className="text-gray-400 text-base font-interMedium text-center mt-2">
+                            Sign {toSignIn ? 'in' : 'up'} to continue to your account
+                        </Text>
+                    </View>
+
+                    {/* Form Section */}
+                    <View className="gap-y-6">
+                        {/* Name Input */}
+                        {!toSignIn &&
+                            <View>
+                                <Text className="text-gray-300 text-sm font-interMedium mb-2">
+                                    Full Name
+                                </Text>
+                                <TextInput
+                                    value={name}
+                                    onChangeText={setName}
+                                    placeholder="Enter your full name"
+                                    placeholderTextColor="#6B7280"
+                                    className="bg-gray-700 text-white text-base font-interMedium px-4 py-4 rounded-xl border border-gray-600 focus:border-green-400"
+                                    autoCapitalize="words"
+                                    autoComplete="name"
+                                />
+                            </View>
+                        }
+
+                        {/* Phone Input */}
+                        {/*<View>*/}
+                        {/*    <Text className="text-gray-300 text-sm font-interMedium mb-2">*/}
+                        {/*        Phone Number*/}
+                        {/*    </Text>*/}
+                        {/*    <TextInput*/}
+                        {/*        value={phone}*/}
+                        {/*        onChangeText={setPhone}*/}
+                        {/*        placeholder="Enter your phone number"*/}
+                        {/*        placeholderTextColor="#6B7280"*/}
+                        {/*        className="bg-gray-700 text-white text-base font-interMedium px-4 py-4 rounded-xl border border-gray-600 focus:border-green-400"*/}
+                        {/*        keyboardType="phone-pad"*/}
+                        {/*        autoComplete="tel"*/}
+                        {/*    />*/}
+                        {/*</View>*/}
+
+                        {/* Email Input */}
+                        <View>
+                            <Text className="text-gray-300 text-sm font-interMedium mb-2">
+                                Email Address
+                            </Text>
+                            <TextInput
+                                value={email}
+                                onChangeText={setEmail}
+                                placeholder="Enter your email address"
+                                placeholderTextColor="#6B7280"
+                                className="bg-gray-700 text-white text-base font-interMedium px-4 py-4 rounded-xl border border-gray-600 focus:border-green-400"
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                                autoComplete="email"
+                            />
+                        </View>
+
+                        {/* Password Input */}
+                        <View>
+                            <Text className="text-gray-300 text-sm font-interMedium mb-2">
+                                Password
+                            </Text>
+                            <TextInput
+                                value={password}
+                                onChangeText={setPassword}
+                                placeholder="Enter your email address"
+                                placeholderTextColor="#6B7280"
+                                className="bg-gray-700 text-white text-base font-interMedium px-4 py-4 rounded-xl border border-gray-600 focus:border-green-400"
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                                autoComplete="email"
+                            />
+                        </View>
+                    </View>
+
+                    {/* Login Button */}
+                    <TouchableOpacity
+                        onPress={() => {
+                            if (toSignIn) {
+                                signInWithEmailPassword(email, password)
+                                    .then(() => {
+                                        navigation.goBack()
+                                        navigation.navigate("TabNavigator");
+                                    })
+                                    .catch(err => {
+                                        console.error("Login error:", err.message);
+                                    });
+                            } else {
+                                signUpWithEmailPassword(email, password)
+                                    .then(() => {
+                                        navigation.goBack()
+                                        navigation.navigate("TabNavigator");
+                                    })
+                                    .catch(err => {
+                                        console.error("Signup error:", err.message);
+                                    });
+                            }
+
+                        }}
+                        className="bg-green-400 py-4 rounded-xl mt-8 active:bg-green-500"
+                        activeOpacity={0.8}
+                    >
+                        <Text className="text-gray-800 text-base font-interSemiBold text-center">
+                            Continue
+                        </Text>
+                    </TouchableOpacity>
+
+                    {/* Footer */}
+                    <View className="flex-1 justify-end pb-8">
+                        <View className="flex-row justify-center items-center">
+                            <Text className="text-gray-400 text-sm font-interMedium">
+                                {toSignIn ? 'Don\'t' : 'Already'} have an account?{' '}
+                            </Text>
+                            <TouchableOpacity onPress={() => {
+                                setToSignIn(!toSignIn);
+                            }}>
+                                <Text className="text-green-400 text-sm font-interSemiBold">
+                                    {toSignIn ? 'Sign Up' : 'Sign In'}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <Text className="text-gray-500 text-xs font-interMedium text-center mt-4">
+                            By continuing, you agree to our Terms of Service and Privacy Policy
+                        </Text>
+                    </View>
+                </View>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
+    );
+};
+
+export default LoginScreen;

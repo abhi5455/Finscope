@@ -16,6 +16,8 @@ import {
     Save,
     X,
 } from "lucide-react-native";
+import {signOut} from "../../services/signInHelper.ts";
+import {useAppNavigation} from "../../common/navigationHelper.ts";
 
 interface ProfileData {
     name: string;
@@ -24,6 +26,7 @@ interface ProfileData {
 }
 
 const ProfileScreen: React.FC = () => {
+    const navigation = useAppNavigation();
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [profile, setProfile] = useState<ProfileData>({
         name: "John Doe",
@@ -45,10 +48,6 @@ const ProfileScreen: React.FC = () => {
     const handleCancel = (): void => {
         setEditedProfile(profile);
         setIsEditing(false);
-    };
-
-    const handleLogout = (): void => {
-        console.log("Logging out...");
     };
 
     const getInitials = (name: string): string => {
@@ -194,9 +193,18 @@ const ProfileScreen: React.FC = () => {
                         )}
 
                         <TouchableOpacity
-                            onPress={handleLogout}
+                            onPress={() => {
+                                signOut()
+                                    .then(() => {
+                                        navigation.goBack()
+                                        navigation.navigate("AuthenticationStack");
+                                    })
+                                    .catch((err) => {
+                                        console.error("Logout failed:", err.message);
+                                    });
+                            }
+                            }
                             className="border border-red-600 rounded-md py-3 px-4 flex-row items-center justify-center"
-                            activeOpacity={0.8}
                         >
                             <LogOut size={16} color="#F87171"/>
                             <Text className="text-red-400 font-interSemiBold ml-2">Logout</Text>

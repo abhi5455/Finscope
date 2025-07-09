@@ -3,27 +3,38 @@ import FinscopeLogo from "../../assets/svg/FinscopeLogo.svg";
 import {useCallback} from "react";
 import {useFocusEffect} from "@react-navigation/native";
 import {useAppNavigation} from "../../common/navigationHelper.ts";
+import {checkIsSignedIn} from "../../services/signInHelper.ts";
 
 export default function SplashScreen(){
     const navigation = useAppNavigation()
-    // const storage = new MMKV();
 
     // useStatusBarOnFocus('light-content', '#260210')
-
     useFocusEffect(
         useCallback(() => {
-            // const isLoggedIn = storage.getBoolean("isLoggedIn") || false;
-            const isLoggedIn = true;
-            const timeout = setTimeout(() => {
-                if (isLoggedIn) {
+            console.log('useFocusEffect triggered');
+
+            const handleNavigation = async () => {
+                console.log('handleNavigation called');
+                const isSignedIn = await checkIsSignedIn();
+                console.log('isSignedIn:', isSignedIn);
+
+                if (isSignedIn) {
+                    console.log('Navigating to TabNavigator');
                     navigation.navigate("TabNavigator");
                 } else {
+                    console.log('Navigating to AuthenticationStack');
                     navigation.navigate("AuthenticationStack");
                 }
-            }, 1500);
+            };
 
-            return () => clearTimeout(timeout);
-        }, [])
+            const timeout = setTimeout(handleNavigation, 1500);
+            console.log('Timeout set');
+
+            return () => {
+                console.log('Cleanup called - clearing timeout');
+                clearTimeout(timeout);
+            };
+        }, [navigation])
     );
 
     return(
