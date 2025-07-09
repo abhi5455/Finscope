@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
     View,
     Text,
@@ -27,16 +27,22 @@ export default function HomeScreen() {
     const [totalAllocationAmount, setTotalAllocationAmount] = useState(0);
 
     const [allocations, setAllocations] = useState<IAllocation[]>([]);
+    const [selectedAllocation, setSelectedAllocation] = useState<IAllocation | null>(null);
+
+    useEffect(() => {
+        console.log(selectedAllocation)
+    }, [selectedAllocation]);
+
     useFocusEffect(
         useCallback(() => {
             getAllAllocations()
-                .then((res)=>{
+                .then((res) => {
                     console.log(res)
                     setAllocations(res);
                 })
 
             countTotalAllocationAmount()
-                .then((totalAmount)=>{
+                .then((totalAmount) => {
                     setTotalAllocationAmount(totalAmount);
                 })
             return () => {
@@ -44,23 +50,6 @@ export default function HomeScreen() {
             };
         }, [])
     );
-
-    const pieData = [
-        {
-            name: "Quarter Slice",
-            population: 37,
-            color: "#46aa7c",
-            legendFontColor: "#ffffff",
-            legendFontSize: 12,
-        },
-        {
-            name: "Rest",
-            population: 75,
-            color: "#585858", // Dim background color like dark gray
-            legendFontColor: "#ffffff",
-            legendFontSize: 12,
-        },
-    ];
 
     return (
         <SafeAreaView className="flex-1 bg-gray-800">
@@ -124,53 +113,77 @@ export default function HomeScreen() {
                     <View className="mb-6">
 
                         {/* Allocation Cards */}
-                        {allocations?.map((allocation) => (
-                            <TouchableOpacity
-                                key={allocation.id}
-                                className="bg-[#494949]/80 rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666]"
-                                onPress={() => {
-                                    setModifyAllocationModalVisible(true)
-                                }}
-                            >
-                                <View
-                                    className="w-[60px] h-[60px] overflow-hidden mr-3 flex items-center justify-center rounded-full">
-                                    <PieChart
-                                        data={pieData}
-                                        width={65}
-                                        height={65}
-                                        chartConfig={{
-                                            color: (opacity = 1) => `rgba(255, 0, 25, ${opacity})`,
-                                        }}
-                                        accessor="population"
-                                        backgroundColor="transparent"
-                                        paddingLeft="16"
-                                        hasLegend={false}
-                                        absolute
-                                    />
-                                </View>
+                        {allocations?.map((allocation) => {
+                            const percentage = totalAllocationAmount > 0
+                                ? (allocation.amount / totalAllocationAmount) * 100
+                                : 0;
 
-                                <View className="flex-1">
-                                    <Text className="text-white text-base font-interMedium mb-1">
-                                        {allocation.title}
-                                    </Text>
-                                    <Text className="text-gray-400 text-sm font-interMedium mb-1">
-                                        {allocation.type}
-                                    </Text>
-                                    <Text className="text-primary text-base font-interSemiBold">
-                                        {allocation.amount}
-                                    </Text>
-                                </View>
+                            const pieData = [
+                                {
+                                    name: 'Allocated',
+                                    population: percentage,
+                                    color: '#46aa7c',
+                                    legendFontColor: '#ffffff',
+                                    legendFontSize: 12,
+                                },
+                                {
+                                    name: 'Remaining',
+                                    population: 100 - percentage,
+                                    color: '#585858',
+                                    legendFontColor: '#ffffff',
+                                    legendFontSize: 12,
+                                },
+                            ];
 
-                                <View className="flex flex-col justify-between items-end self-stretch">
-                                    <TouchableOpacity>
-                                        <SaveIcon/>
-                                    </TouchableOpacity>
-                                    <Text className="text-gray-400 text-xs font-interMedium">
-                                        {allocation.created_at && format(allocation.created_at, 'dd MMM yyyy')}
-                                    </Text>
-                                </View>
-                            </TouchableOpacity>
-                        ))}
+                            return (
+                                <TouchableOpacity
+                                    key={allocation.id}
+                                    className="bg-[#494949]/80 rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666]"
+                                    onPress={() => {
+                                        setModifyAllocationModalVisible(true)
+                                        setSelectedAllocation(allocation);
+                                    }}
+                                >
+                                    <View
+                                        className="w-[60px] h-[60px] overflow-hidden mr-3 flex items-center justify-center rounded-full">
+                                        <PieChart
+                                            data={pieData}
+                                            width={65}
+                                            height={65}
+                                            chartConfig={{
+                                                color: (opacity = 1) => `rgba(255, 0, 25, ${opacity})`,
+                                            }}
+                                            accessor="population"
+                                            backgroundColor="transparent"
+                                            paddingLeft="16"
+                                            hasLegend={false}
+                                            absolute
+                                        />
+                                    </View>
+
+                                    <View className="flex-1">
+                                        <Text className="text-white text-base font-interMedium mb-1">
+                                            {allocation.title}
+                                        </Text>
+                                        <Text className="text-gray-400 text-sm font-interMedium mb-1">
+                                            {allocation.type}
+                                        </Text>
+                                        <Text className="text-primary text-base font-interSemiBold">
+                                            {allocation.amount}
+                                        </Text>
+                                    </View>
+
+                                    <View className="flex flex-col justify-between items-end self-stretch">
+                                        <TouchableOpacity>
+                                            <SaveIcon/>
+                                        </TouchableOpacity>
+                                        <Text className="text-gray-400 text-xs font-interMedium">
+                                            {allocation.created_at && format(allocation.created_at, 'dd MMM yyyy')}
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
+                            )
+                        })}
 
                         {/* Add New Allocation Button */}
                         <TouchableOpacity
@@ -202,6 +215,7 @@ export default function HomeScreen() {
                     onSave={() => {
 
                     }}
+                    selectedAllocation={selectedAllocation}
                 />
             </LinearGradient>
         </SafeAreaView>

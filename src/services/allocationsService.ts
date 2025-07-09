@@ -74,3 +74,59 @@ export async function countTotalAllocationAmount(): Promise<number> {
 
     return data.reduce((total, allocation) => total + allocation.amount, 0);
 }
+
+export async function deleteAllocation(id: string): Promise<void> {
+    const { error } = await supabase
+        .from('allocations')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        throw error;
+    }
+}
+
+export  async function updateAllocation(
+    id: string,
+    title: string,
+    type: string,
+    transaction_type: 'added' | 'deducted',
+    update_amount: string | null = null,
+    remarks: string,
+): Promise<void> {
+    const { error } = await supabase
+        .from('allocations')
+        .update({
+            title,
+            type,
+        })
+        .eq('id', id);
+
+    if(update_amount)
+    addTransactionToAllocation(id,update_amount, transaction_type, remarks)
+
+    if (error) {
+        throw error;
+    }
+
+}
+
+export async function addTransactionToAllocation(
+    allocationId: string,
+    amount: string,
+    transactionType: 'added' | 'deducted',
+    remark?: string
+): Promise<void> {
+    const { error } = await supabase
+        .from('transactions')
+        .insert({
+            allocation_id: allocationId,
+            amount: parseFloat(amount),
+            transaction_type: transactionType,
+            remark
+        });
+
+    if (error) {
+        throw error;
+    }
+}
