@@ -84,13 +84,13 @@ export async function countTotalAllocationAmount(): Promise<number> {
 
 
 export async function deleteAllocation(id: string): Promise<void> {
-    const { data: { user } } = await supabase.auth.getUser();
+    // const { data: { user } } = await supabase.auth.getUser();
 
     const { error } = await supabase
         .from('allocations')
         .delete()
         .eq('id', id)
-        .eq('user_id', user?.id);
+        // .eq('user_id', user?.id);
 
     if (error) throw error;
 }
@@ -124,7 +124,6 @@ export async function addTransactionToAllocation(
     transactionType: 'added' | 'deducted',
     remark?: string
 ): Promise<void> {
-    const { data: { user } } = await supabase.auth.getUser();
 
     const { error } = await supabase
         .from('transactions')
@@ -133,20 +132,17 @@ export async function addTransactionToAllocation(
             amount: parseFloat(amount),
             transaction_type: transactionType,
             remark,
-            user_id: user?.id
         });
 
     if (error) throw error;
 }
 
 export async function getTransactionsForAllocation(allocationId: string): Promise<any[]> {
-    const { data: { user } } = await supabase.auth.getUser();
 
     const { data, error } = await supabase
         .from('transactions')
         .select('*')
         .eq('allocation_id', allocationId)
-        .eq('user_id', user?.id)
         .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -160,7 +156,7 @@ export async function getAllTransactions(): Promise<any[]> {
     const { data, error } = await supabase
         .from('transactions')
         .select(`*, allocations(title)`)
-        .eq('user_id', user?.id)
+        .eq('allocations.user_id', user?.id)
         .order('created_at', { ascending: false });
 
     if (error) throw error;
