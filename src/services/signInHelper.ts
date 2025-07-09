@@ -1,7 +1,3 @@
-// import { MMKV } from 'react-native-mmkv';
-//
-// const storage = new MMKV();
-
 import {supabase} from "./supabaseClient.ts";
 
 export function setSignedIn(){

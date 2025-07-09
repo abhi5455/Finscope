@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
     View,
     Text,
@@ -6,6 +6,8 @@ import {
     TouchableOpacity,
     Modal, StatusBar, Pressable,
 } from 'react-native';
+import {createNewAllocation} from "../../../services/allocationsService.ts";
+import Toast from "react-native-toast-message";
 
 interface AddAllocationModalProps {
     visible: boolean;
@@ -18,80 +20,89 @@ const AddAllocationModal: React.FC<AddAllocationModalProps> = ({
                                                                    onClose,
                                                                    onSave,
                                                                }) => {
-    const [title, setTitle] = useState('');
-    const [type, setType] = useState('');
-    const [amount, setAmount] = useState('');
+        const [title, setTitle] = useState('');
+        const [type, setType] = useState('');
+        const [amount, setAmount] = useState('');
 
-    const handleSave = () => {
-        onSave({ title, type, amount });
-        // Reset form
-        setTitle('');
-        setType('');
-        setAmount('');
-        onClose();
-    };
+        const handleSave = () => {
+            onSave({title, type, amount});
+            createNewAllocation(title, type, amount)
+                .then(() => {
+                    onClose();
+                })
+                .catch((error) => {
+                    console.error('Error creating allocation:', error);
+                })
+                .finally(() => {
+                    setTitle('');
+                    setType('');
+                    setAmount('');
+                })
 
-    return (
-        <Modal
-            visible={visible}
-            transparent={true}
-            animationType="slide"
-            onRequestClose={onClose}
-        >
-            <StatusBar backgroundColor={'#000'} barStyle={'light-content'}/>
-            <Pressable className="flex-1 bg-[#545454]/80 bg-opacity-50 justify-end" onPress={onClose}>
-                <Pressable className="bg-secondary rounded-t-3xl px-6 py-8" onPress={(e) => e.stopPropagation()}>
-                    <Text className="text-white text-xl font-interSemiBold mb-8">
-                        Add New Allocation
-                    </Text>
+        };
 
-                    {/* Title Input */}
-                    <View className="mb-4">
-                        <TextInput
-                            value={title}
-                            onChangeText={setTitle}
-                            placeholder="Title"
-                            placeholderTextColor="#9ca3af"
-                            className="bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
-                        />
-                    </View>
-
-                    {/* Type Input */}
-                    <View className="mb-4">
-                        <TextInput
-                            value={type}
-                            onChangeText={setType}
-                            placeholder="Type of allocation (Eg: Savings, current)"
-                            placeholderTextColor="#9ca3af"
-                            className="bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
-                        />
-                    </View>
-
-                    {/* Amount Input */}
-                    <View className="mb-8">
-                        <TextInput
-                            value={amount}
-                            onChangeText={setAmount}
-                            placeholder="Amount to allocate"
-                            placeholderTextColor="#9ca3af"
-                            keyboardType="numeric"
-                            className="bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
-                        />
-                    </View>
-
-                    {/* Save Button */}
-                    <TouchableOpacity
-                        onPress={handleSave}
-                        className="bg-[#3d8262] rounded-lg py-4 items-center border-primary border-[1.5px]"
-                    >
-                        <Text className="text-primary text-lg font-interSemiBold">
-                            Save
+        return (
+            <Modal
+                visible={visible}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={onClose}
+            >
+                <StatusBar backgroundColor={'#000'} barStyle={'light-content'}/>
+                <Pressable className="flex-1 bg-[#545454]/80 bg-opacity-50 justify-end" onPress={onClose}>
+                    <Pressable className="bg-secondary rounded-t-3xl px-6 py-8" onPress={(e) => e.stopPropagation()}>
+                        <Text className="text-white text-xl font-interSemiBold mb-8">
+                            Add New Allocation
                         </Text>
-                    </TouchableOpacity>
+
+                        {/* Title Input */}
+                        <View className="mb-4">
+                            <TextInput
+                                value={title}
+                                onChangeText={setTitle}
+                                placeholder="Title"
+                                placeholderTextColor="#9ca3af"
+                                className="bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
+                            />
+                        </View>
+
+                        {/* Type Input */}
+                        <View className="mb-4">
+                            <TextInput
+                                value={type}
+                                onChangeText={setType}
+                                placeholder="Type of allocation (Eg: Savings, current)"
+                                placeholderTextColor="#9ca3af"
+                                className="bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
+                            />
+                        </View>
+
+                        {/* Amount Input */}
+                        <View className="mb-8">
+                            <TextInput
+                                value={amount}
+                                onChangeText={setAmount}
+                                placeholder="Amount to allocate"
+                                placeholderTextColor="#9ca3af"
+                                keyboardType="numeric"
+                                className="bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
+                            />
+                        </View>
+
+                        {/* Save Button */}
+                        <TouchableOpacity
+                            onPress={handleSave}
+                            className="bg-[#3d8262] rounded-lg py-4 items-center border-primary border-[1.5px]"
+                        >
+                            <Text className="text-primary text-lg font-interSemiBold">
+                                Save
+                            </Text>
+                        </TouchableOpacity>
+                    </Pressable>
                 </Pressable>
-            </Pressable>
-        </Modal>
-    );
-};
+            </Modal>
+        );
+    }
+;
 
 export default AddAllocationModal;

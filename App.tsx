@@ -4,6 +4,7 @@ import {SafeAreaView} from "react-native";
 import {NavigationContainer} from "@react-navigation/native";
 import {StackNavigator} from "./src/navigation/StackNavigator";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 export default function App() {
 
@@ -13,6 +14,7 @@ export default function App() {
             <SafeAreaView className="flex-1">
                 <NavigationContainer>
                     <StackNavigator/>
+                    <Toast />
                 </NavigationContainer>
             </SafeAreaView>
         </GestureHandlerRootView>

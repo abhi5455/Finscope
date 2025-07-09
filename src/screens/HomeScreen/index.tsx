@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
     View,
     Text,
@@ -15,70 +15,35 @@ import {PieChart} from "react-native-chart-kit";
 import {useAppNavigation} from "../../common/navigationHelper.ts";
 import AddAllocationModal from "./AddAllocationModal";
 import ModifyAllocationModal from "./ModifyAllocationModal";
+import {useFocusEffect} from "@react-navigation/native";
+import {countTotalAllocationAmount, getAllAllocations} from "../../services/allocationsService.ts";
+import {IAllocation} from "../../types/allocation_type.ts";
+import {format} from "date-fns";
 
 export default function HomeScreen() {
     const navigation = useAppNavigation()
     const [addAllocationModalVisible, setAddAllocationModalVisible] = useState(false);
     const [modifyAllocationModalVisible, setModifyAllocationModalVisible] = useState(false);
+    const [totalAllocationAmount, setTotalAllocationAmount] = useState(0);
 
-    const allocations = [
-        {
-            id: 1,
-            name: 'National Bank Savings',
-            type: 'Savings Account',
-            amount: '$1,000.00',
-            date: '15 Nov 2025',
-            iconColor: 'bg-green-500',
-        },
-        {
-            id: 2,
-            name: 'Swiss bank savings',
-            type: 'Savings Account',
-            amount: '$1,000.00',
-            date: '15 Nov 2025',
-            iconColor: 'bg-teal-500',
-        },
-        {
-            id: 3,
-            name: 'Real Estate',
-            type: 'Savings Account',
-            amount: '$7,0000.00',
-            date: '15 Nov 2025',
-            iconColor: 'bg-green-400',
-        },
-        {
-            id: 4,
-            name: 'Mutual Funds',
-            type: 'Savings Account',
-            amount: '$11,0000.00',
-            date: '15 Nov 2025',
-            iconColor: 'bg-green-500',
-        },
-        {
-            id: 5,
-            name: 'Mutual Funds',
-            type: 'Savings Account',
-            amount: '$11,0000.00',
-            date: '15 Nov 2025',
-            iconColor: 'bg-green-500',
-        },
-        {
-            id: 6,
-            name: 'Mutual Funds',
-            type: 'Savings Account',
-            amount: '$11,0000.00',
-            date: '15 Nov 2025',
-            iconColor: 'bg-green-500',
-        },
-        {
-            id: 7,
-            name: 'Mutual Funds',
-            type: 'Savings Account',
-            amount: '$11,0000.00',
-            date: '15 Nov 2025',
-            iconColor: 'bg-green-500',
-        },
-    ];
+    const [allocations, setAllocations] = useState<IAllocation[]>([]);
+    useFocusEffect(
+        useCallback(() => {
+            getAllAllocations()
+                .then((res)=>{
+                    console.log(res)
+                    setAllocations(res);
+                })
+
+            countTotalAllocationAmount()
+                .then((totalAmount)=>{
+                    setTotalAllocationAmount(totalAmount);
+                })
+            return () => {
+                console.log('Screen unfocused — cleanup if needed');
+            };
+        }, [])
+    );
 
     const pieData = [
         {
@@ -112,7 +77,7 @@ export default function HomeScreen() {
                             Your Net{'\n'}Worth
                         </Text>
                         <Text className="text-primary text-4xl font-interSemiBold mb-6">
-                            $1,000,000
+                            ${totalAllocationAmount}
                         </Text>
                     </View>
 
@@ -159,7 +124,7 @@ export default function HomeScreen() {
                     <View className="mb-6">
 
                         {/* Allocation Cards */}
-                        {allocations.map((allocation) => (
+                        {allocations?.map((allocation) => (
                             <TouchableOpacity
                                 key={allocation.id}
                                 className="bg-[#494949]/80 rounded-xl p-4 mb-4 flex flex-row items-start border-[1.5px] border-[#666666]"
@@ -186,7 +151,7 @@ export default function HomeScreen() {
 
                                 <View className="flex-1">
                                     <Text className="text-white text-base font-interMedium mb-1">
-                                        {allocation.name}
+                                        {allocation.title}
                                     </Text>
                                     <Text className="text-gray-400 text-sm font-interMedium mb-1">
                                         {allocation.type}
@@ -201,7 +166,7 @@ export default function HomeScreen() {
                                         <SaveIcon/>
                                     </TouchableOpacity>
                                     <Text className="text-gray-400 text-xs font-interMedium">
-                                        {allocation.date}
+                                        {allocation.created_at && format(allocation.created_at, 'dd MMM yyyy')}
                                     </Text>
                                 </View>
                             </TouchableOpacity>
