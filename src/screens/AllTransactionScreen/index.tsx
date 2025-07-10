@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {Fragment, useCallback} from 'react';
 import {
     View,
     Text,
@@ -18,11 +18,11 @@ export default function AllTransactionScreen() {
 
     useFocusEffect(
         useCallback(() => {
-        getAllTransactions()
-            .then((data) => {
-                console.log('All Transactions:', data);
-                setTransactions(data);
-            })
+            getAllTransactions()
+                .then((data) => {
+                    console.log('All Transactions:', data);
+                    setTransactions(data);
+                })
             return () => {
 
             };
@@ -39,35 +39,45 @@ export default function AllTransactionScreen() {
             </View>
             {/* Transaction List */}
             <ScrollView className="flex-1 px-7">
-                {transactions?.map((transaction, index) => (
-                    <View key={transaction.id}>
-                        <View className="py-4">
-                            <View className="flex-row items-start justify-between mb-2">
-                                <Text
-                                    className={`text-lg font-interSemiBold ${
-                                        transaction.transaction_type === 'added' ? 'text-green-400' : 'text-red-400'
-                                    }`}
-                                >
-                                    {transaction.transaction_type === 'added' ? '+' : '-'}{transaction.amount}
-                                </Text>
-                                <Text className="text-gray-400 text-sm font-interMedium">
-                                    {transaction?.created_at && format(transaction.created_at, 'dd MMM, yyyy')}
-                                </Text>
-                            </View>
-                            <View className="flex flex-row items-center justify-start gap-1.5">
-                                <View className="opacity-45">
-                                    <HandCoins stroke={'#9ca3af'}/>
+                {transactions && transactions.length > 0 ?
+                    <Fragment>
+                        {transactions?.map((transaction, index) => (
+                            <View key={transaction.id}>
+                                <View className="py-4">
+                                    <View className="flex-row items-start justify-between mb-2">
+                                        <Text
+                                            className={`text-lg font-interSemiBold ${
+                                                transaction.transaction_type === 'added' ? 'text-green-400' : 'text-red-400'
+                                            }`}
+                                        >
+                                            {transaction.transaction_type === 'added' ? '+' : '-'}{transaction.amount}
+                                        </Text>
+                                        <Text className="text-gray-400 text-sm font-interMedium">
+                                            {transaction?.created_at && format(transaction.created_at, 'dd MMM, yyyy')}
+                                        </Text>
+                                    </View>
+                                    <View className="flex flex-row items-center justify-start gap-1.5">
+                                        <View className="opacity-45">
+                                            <HandCoins stroke={'#9ca3af'}/>
+                                        </View>
+                                        <Text className="text-gray-400 text-sm font-interMedium">
+                                            {transaction?.allocation_title}
+                                        </Text>
+                                    </View>
                                 </View>
-                                <Text className="text-gray-400 text-sm font-interMedium">
-                                    {transaction?.allocation_title}
-                                </Text>
+                                {index < transactions.length - 1 && (
+                                    <View className="h-px bg-[#494949]"/>
+                                )}
                             </View>
-                        </View>
-                        {index < transactions.length - 1 && (
-                            <View className="h-px bg-[#494949]"/>
-                        )}
+                        ))}
+                    </Fragment>
+                    :
+                    <View className="flex-1 min-h-full items-center justify-center py-48 opacity-20">
+                        <Text className="text-gray-400 text-lg font-interMedium mb-1">
+                            No Transactions yet!
+                        </Text>
                     </View>
-                ))}
+                }
             </ScrollView>
         </SafeAreaView>
     );
