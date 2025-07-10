@@ -16,7 +16,6 @@ import {PieChart} from "react-native-chart-kit";
 import {useAppNavigation} from "../../common/navigationHelper.ts";
 import AddAllocationModal from "./AddAllocationModal";
 import ModifyAllocationModal from "./ModifyAllocationModal";
-import {useFocusEffect} from "@react-navigation/native";
 import {
     countTotalAllocationAmount,
     getAllAllocations,
@@ -25,6 +24,7 @@ import {
 } from "../../services/allocationsService.ts";
 import {IAllocation} from "../../types/allocation_type.ts";
 import {format} from "date-fns";
+import {useFocusEffect} from "@react-navigation/native";
 
 export default function HomeScreen() {
     const navigation = useAppNavigation()
@@ -35,9 +35,7 @@ export default function HomeScreen() {
     const [selectedAllocation, setSelectedAllocation] = useState<IAllocation | null>(null);
     const [savedAllocations, setSavedAllocations] = useState<Set<string>>(new Set());
 
-    useEffect(() => {
-        console.log(selectedAllocation)
-    }, [selectedAllocation]);
+    const [triggerRefetch, setTriggerRefetch] = useState(0);
 
     const toggleSaveAllocation = (allocationId: string) => {
         let wasSaved = savedAllocations.has(allocationId);
@@ -62,8 +60,7 @@ export default function HomeScreen() {
                         return newSet;
                     });
                 });
-        }
-        else{
+        } else {
             unsaveAllocation(allocationId)
                 .then(() => {
                 })
@@ -78,27 +75,32 @@ export default function HomeScreen() {
         }
     };
 
+    const fetchAllocations = () => {
+        console.log("Refetching allocations...");
+        getAllAllocations()
+            .then((res) => {
+                console.log(res);
+                setAllocations(res);
+                const savedIds = new Set(
+                    res.filter(a => a.is_saved).map(a => a.id)
+                );
+                setSavedAllocations(savedIds);
+            });
+        countTotalAllocationAmount()
+            .then((totalAmount) => {
+                setTotalAllocationAmount(totalAmount);
+            });
+    };
+
     useFocusEffect(
         useCallback(() => {
-            getAllAllocations()
-                .then((res) => {
-                    console.log(res)
-                    setAllocations(res);
-                    const savedIds = new Set(
-                        res
-                            .filter(a => a.is_saved)
-                            .map(a => a.id)
-                    );
-                    setSavedAllocations(savedIds);
-                })
-            countTotalAllocationAmount()
-                .then((totalAmount) => {
-                    setTotalAllocationAmount(totalAmount);
-                })
-            return () => {
-            };
+            fetchAllocations();
         }, [])
     );
+
+    useEffect(() => {
+        fetchAllocations();
+    }, [triggerRefetch]);
 
     return (
         <SafeAreaView className="flex-1 bg-gray-800">
@@ -240,12 +242,14 @@ export default function HomeScreen() {
                 <AddAllocationModal
                     visible={addAllocationModalVisible}
                     onClose={() => setAddAllocationModalVisible(false)}
+                    setTriggerRefetch={setTriggerRefetch}
                     onSave={() => {
                     }}
                 />
                 <ModifyAllocationModal
                     visible={modifyAllocationModalVisible}
                     onClose={() => setModifyAllocationModalVisible(false)}
+                    setTriggerRefetch={setTriggerRefetch}
                     onSave={() => {
                     }}
                     selectedAllocation={selectedAllocation}

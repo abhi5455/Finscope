@@ -19,13 +19,15 @@ interface AddAllocationModalProps {
     onClose: () => void;
     onSave: (data: { title: string; type: string; amount: string }) => void;
     selectedAllocation?: IAllocation | null;
+    setTriggerRefetch: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
                                                                       visible,
                                                                       onClose,
                                                                       onSave,
-                                                                      selectedAllocation = null
+                                                                      selectedAllocation = null,
+                                                                      setTriggerRefetch
                                                                   }) => {
     const [title, setTitle] = useState(selectedAllocation?.title || '');
     const [type, setType] = useState(selectedAllocation?.type || '');
@@ -47,10 +49,16 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
         if (selectedAllocation)
             updateAllocation(selectedAllocation.id, title, type, transactionType, amount, remarks)
                 .then(() => {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Allocation updated',
+                        position: 'bottom'
+                    });
+                    setTriggerRefetch(prev => prev + 1);
                     onClose();
                 })
                 .catch((error) => {
-                    console.error('Error creating allocation:', error);
+                    console.error('Error updating allocation:', error);
                 })
                 .finally(() => {
                     setAmount('');
@@ -93,6 +101,7 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
                                             text1: 'Allocation deleted successfully',
                                             position: 'bottom'
                                         });
+                                        setTriggerRefetch(prev => prev + 1);
                                         onClose();
                                     })
                                     .catch((error) => {

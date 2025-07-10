@@ -13,12 +13,14 @@ interface AddAllocationModalProps {
     visible: boolean;
     onClose: () => void;
     onSave: (data: { title: string; type: string; amount: string }) => void;
+    setTriggerRefetch: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const AddAllocationModal: React.FC<AddAllocationModalProps> = ({
                                                                    visible,
                                                                    onClose,
                                                                    onSave,
+                                                                   setTriggerRefetch
                                                                }) => {
         const [title, setTitle] = useState('');
         const [type, setType] = useState('');
@@ -28,10 +30,22 @@ const AddAllocationModal: React.FC<AddAllocationModalProps> = ({
             onSave({title, type, amount});
             createNewAllocation(title, type, amount)
                 .then(() => {
+                    setTriggerRefetch(prev => prev + 1)
+                    Toast.show({
+                        type: 'success',
+                        text1: 'New allocation created successfully',
+                        position: 'bottom'
+                    });
                     onClose();
                 })
                 .catch((error) => {
                     console.error('Error creating allocation:', error);
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error creating allocation:',
+                        text2: error.message || 'An unexpected error occurred.',
+                        position: 'bottom'
+                    });
                 })
                 .finally(() => {
                     setTitle('');

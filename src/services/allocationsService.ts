@@ -19,23 +19,15 @@ export async function createNewAllocation(
     const {data, error} = await supabase
         .from('allocations')
         .insert([allocation])
+        .select()
         .single()
 
     if (error) {
-        Toast.show({
-            type: 'error',
-            text1: 'Error creating allocation:',
-            text2: error.message || 'An unexpected error occurred.',
-            position: 'bottom'
-        });
         throw error;
     }
 
-    Toast.show({
-        type: 'success',
-        text1: 'New allocation created successfully',
-        position: 'bottom'
-    });
+    console.log("New allocation created:", data);
+    await addTransactionToAllocation(data.id, amount, 'added', 'Initial allocation');
 }
 
 export async function getAllAllocations(): Promise<any[]> {
@@ -79,11 +71,11 @@ export async function saveAllocation(id: string): Promise<void> {
         throw error;
     }
 
-    Toast.show({
-        type: 'success',
-        text1: 'Allocation saved successfully',
-        position: 'bottom'
-    });
+    // Toast.show({
+    //     type: 'success',
+    //     text1: 'Allocation saved successfully',
+    //     position: 'bottom'
+    // });
 }
 
 export async function unsaveAllocation(id: string): Promise<void> {
@@ -105,11 +97,11 @@ export async function unsaveAllocation(id: string): Promise<void> {
         throw error;
     }
 
-    Toast.show({
-        type: 'success',
-        text1: 'Allocation unsaved successfully',
-        position: 'bottom'
-    });
+    // Toast.show({
+    //     type: 'success',
+    //     text1: 'Allocation unsaved successfully',
+    //     position: 'bottom'
+    // });
 }
 
 export async function getSavedAllocations(): Promise<any[]> {
