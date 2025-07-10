@@ -4,7 +4,7 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    Modal, StatusBar, Pressable,
+    Modal, StatusBar, Pressable, ActivityIndicator,
 } from 'react-native';
 import {Minus, PlusIcon} from "lucide-react-native";
 import TransactionIcon from '../../../assets/svg/TransactionGreenIcon.svg';
@@ -37,6 +37,8 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
     const [transactionType, setTransactionType] = useState<'added' | 'deducted'>('added');
     const navigation = useAppNavigation();
 
+    const [isLoading, setIsLoading] = useState(false);
+
     useEffect(() => {
         if (selectedAllocation) {
             setTitle(selectedAllocation?.title || '');
@@ -46,7 +48,8 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
 
     const handleSave = () => {
         onSave({title, type, amount});
-        if (selectedAllocation)
+        if (selectedAllocation) {
+            setIsLoading(true)
             updateAllocation(selectedAllocation.id, title, type, transactionType, amount, remarks)
                 .then(() => {
                     Toast.show({
@@ -67,10 +70,11 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
                     });
                 })
                 .finally(() => {
+                    setIsLoading(false);
                     setAmount('');
                     setRemarks('');
                 })
-
+        }
     };
 
     return (
@@ -195,10 +199,15 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
                     <TouchableOpacity
                         onPress={handleSave}
                         className="bg-[#3d8262] rounded-lg py-4 items-center border-primary border-[1.5px]"
+                        disabled={isLoading}
                     >
-                        <Text className="text-primary text-lg font-interSemiBold">
-                            Save
-                        </Text>
+                        {!isLoading ?
+                            <Text className="text-primary text-lg font-interSemiBold">
+                                Save
+                            </Text>
+                            :
+                            <ActivityIndicator color={'#56eba6'} size={'small'}/>
+                        }
                     </TouchableOpacity>
                 </Pressable>
             </Pressable>

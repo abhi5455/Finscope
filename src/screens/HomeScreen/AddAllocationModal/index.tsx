@@ -4,7 +4,7 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    Modal, StatusBar, Pressable,
+    Modal, StatusBar, Pressable, ActivityIndicator,
 } from 'react-native';
 import {createNewAllocation} from "../../../services/allocationsService.ts";
 import Toast from "react-native-toast-message";
@@ -26,8 +26,11 @@ const AddAllocationModal: React.FC<AddAllocationModalProps> = ({
         const [type, setType] = useState('');
         const [amount, setAmount] = useState('');
 
+        const [isLoading, setIsLoading] = useState(false);
+
         const handleSave = () => {
             onSave({title, type, amount});
+            setIsLoading(true)
             createNewAllocation(title, type, amount)
                 .then(() => {
                     setTriggerRefetch(prev => prev + 1)
@@ -48,6 +51,7 @@ const AddAllocationModal: React.FC<AddAllocationModalProps> = ({
                     });
                 })
                 .finally(() => {
+                    setIsLoading(false);
                     setTitle('');
                     setType('');
                     setAmount('');
@@ -107,10 +111,15 @@ const AddAllocationModal: React.FC<AddAllocationModalProps> = ({
                         <TouchableOpacity
                             onPress={handleSave}
                             className="bg-[#3d8262] rounded-lg py-4 items-center border-primary border-[1.5px]"
+                            disabled={isLoading}
                         >
-                            <Text className="text-primary text-lg font-interSemiBold">
-                                Save
-                            </Text>
+                            {!isLoading ?
+                                <Text className="text-primary text-lg font-interSemiBold">
+                                    Save
+                                </Text>
+                                :
+                                <ActivityIndicator color={'#56eba6'} size={'small'}/>
+                            }
                         </TouchableOpacity>
                     </Pressable>
                 </Pressable>
