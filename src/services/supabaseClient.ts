@@ -1,5 +1,6 @@
 import {createClient} from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from "react-native-toast-message";
 
 const supabaseUrl: string = 'https://avygnyvqvuqpxorvwwif.supabase.co';
 const supabaseAnonKey: string =
@@ -58,6 +59,12 @@ export const signUpWithEmailPassword = async (
 
     if (error) {
         console.error("Signup failed:", error);
+        Toast.show({
+            type: 'error',
+            text1: 'Signup Error',
+            text2: error.message || 'An unexpected error occurred during signup.',
+            position: 'bottom'
+        })
         throw error;
     }
 };
@@ -75,6 +82,12 @@ export const signInWithEmailPassword = async (email: string, password: string) =
 
     if (error) {
         console.error("Login failed:", error);
+        Toast.show({
+            type: 'error',
+            text1: 'Login Error',
+            text2: error.message || 'An unexpected error occurred during login.',
+            position: 'bottom'
+        });
         throw error;
     }
 };
