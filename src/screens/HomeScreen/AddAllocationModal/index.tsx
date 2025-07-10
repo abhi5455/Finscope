@@ -78,6 +78,7 @@ const AddAllocationModal: React.FC<AddAllocationModalProps> = ({
                             <TextInput
                                 value={title}
                                 onChangeText={setTitle}
+                                keyboardType={'default'}
                                 placeholder="Title"
                                 placeholderTextColor="#9ca3af"
                                 className="bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
@@ -89,6 +90,7 @@ const AddAllocationModal: React.FC<AddAllocationModalProps> = ({
                             <TextInput
                                 value={type}
                                 onChangeText={setType}
+                                keyboardType={'default'}
                                 placeholder="Type of allocation (Eg: Savings, current)"
                                 placeholderTextColor="#9ca3af"
                                 className="bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"

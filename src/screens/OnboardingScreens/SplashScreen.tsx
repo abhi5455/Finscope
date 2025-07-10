@@ -1,11 +1,13 @@
-import {SafeAreaView, View} from "react-native";
+import {SafeAreaView, StatusBar, View} from "react-native";
 import FinscopeLogo from "../../assets/svg/FinscopeLogo.svg";
-import {useCallback} from "react";
+import React, {useCallback} from "react";
 import {useFocusEffect} from "@react-navigation/native";
 import {useAppNavigation} from "../../common/navigationHelper.ts";
 import {checkIsSignedIn} from "../../services/signInHelper.ts";
+import {useStatusBarOnFocus} from "../../hooks/useStatusBar.ts";
 
 export default function SplashScreen(){
+    useStatusBarOnFocus('light-content', '#282828')
     const navigation = useAppNavigation()
 
     // useStatusBarOnFocus('light-content', '#260210')
@@ -39,6 +41,7 @@ export default function SplashScreen(){
 
     return(
         <SafeAreaView className="flex-1">
+            <StatusBar backgroundColor={'#282828'} barStyle={'light-content'}/>
             <View className="flex-1 items-center justify-center bg-secondary">
                 <FinscopeLogo/>
             </View>

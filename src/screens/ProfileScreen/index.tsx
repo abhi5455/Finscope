@@ -6,7 +6,7 @@ import {
     TouchableOpacity,
     ScrollView,
     SafeAreaView,
-    Modal,
+    Modal, StatusBar,
 } from 'react-native';
 import {
     User,
@@ -22,6 +22,7 @@ import {useAppNavigation} from "../../common/navigationHelper.ts";
 import {getUserDetails, updateUserProfile} from "../../services/userServices.ts";
 import {useFocusEffect} from "@react-navigation/native";
 import Toast from "react-native-toast-message";
+import {useStatusBarOnFocus} from "../../hooks/useStatusBar.ts";
 
 interface ProfileData {
     name: string;
@@ -30,12 +31,13 @@ interface ProfileData {
 }
 
 const ProfileScreen: React.FC = () => {
+    useStatusBarOnFocus('light-content', '#282828')
     const navigation = useAppNavigation();
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [showLogoutModal, setShowLogoutModal] = useState<boolean>(false);
     const [profile, setProfile] = useState<ProfileData>({
-        name: "John Doe",
-        email: "john.doe@example.com",
+        name: "",
+        email: "",
     });
     const [editedProfile, setEditedProfile] = useState<ProfileData>(profile);
 
@@ -122,8 +124,10 @@ const ProfileScreen: React.FC = () => {
 
     return (
         <SafeAreaView className="flex-1 bg-secondary">
+            <StatusBar backgroundColor={'#282828'} barStyle={'light-content'}/>
+
             {/* Header with Logout Button */}
-            <View className="flex-row justify-between items-center px-4 py-4">
+            <View className="flex-row justify-between items-center px-6 py-4">
                 <Text className="text-xl font-interSemiBold text-white">
                     {isEditing ? "Edit Profile" : "Profile"}
                 </Text>
@@ -141,7 +145,7 @@ const ProfileScreen: React.FC = () => {
                 <View className="rounded-xl p-4 mb-6">
                     {/* Avatar Section */}
                     <View className="items-center mb-6">
-                        <View className="w-20 h-20 bg-emerald-600 rounded-full items-center justify-center mb-4">
+                        <View className="w-20 h-20 bg-emerald-600 border-[1px] border-primary rounded-full items-center justify-center mb-4">
                             <Text className="text-xl font-interSemiBold text-white">
                                 {getInitials(profile.name)}
                             </Text>

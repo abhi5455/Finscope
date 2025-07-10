@@ -3,7 +3,7 @@ import {
     View,
     Text,
     ScrollView,
-    SafeAreaView,
+    SafeAreaView, StatusBar,
 } from 'react-native';
 import {useAppNavigation} from "../../common/navigationHelper.ts";
 import {ITransaction} from "../../types/allocation_type.ts";
@@ -11,8 +11,10 @@ import {getAllTransactions} from "../../services/allocationsService.ts";
 import {format} from "date-fns";
 import HandCoins from '../../assets/svg/HandCoins.svg'
 import {useFocusEffect} from "@react-navigation/native";
+import {useStatusBarOnFocus} from "../../hooks/useStatusBar.ts";
 
 export default function AllTransactionScreen() {
+    useStatusBarOnFocus('light-content', '#282828')
     const navigation = useAppNavigation();
     const [transactions, setTransactions] = React.useState<ITransaction[] | null>(null);
 
@@ -31,6 +33,8 @@ export default function AllTransactionScreen() {
 
     return (
         <SafeAreaView className="flex-1 bg-secondary">
+            <StatusBar backgroundColor={'#282828'} barStyle={'light-content'}/>
+
             {/* Header */}
             <View className="flex-row items-center justify-between gap-5 px-6 py-4 mt-2">
                 <Text className="text-white text-xl font-interBold flex-1 text-left">

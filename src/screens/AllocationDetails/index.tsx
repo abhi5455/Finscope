@@ -4,7 +4,7 @@ import {
     Text,
     ScrollView,
     TouchableOpacity,
-    SafeAreaView,
+    SafeAreaView, StatusBar,
 } from 'react-native';
 import BackIcon from '../../assets/svg/BackIcon.svg';
 import {useAppNavigation} from "../../common/navigationHelper.ts";
@@ -34,6 +34,8 @@ export default function AllocationDetails() {
 
     return (
         <SafeAreaView className="flex-1 bg-secondary">
+            <StatusBar backgroundColor={'#282828'} barStyle={'light-content'}/>
+
             {/* Header */}
             <View className="flex-row items-center justify-between gap-5 px-6 py-4 mt-2">
                 <TouchableOpacity onPress={() => navigation.goBack()}>

@@ -4,7 +4,7 @@ import {
     Text,
     ScrollView,
     TouchableOpacity,
-    SafeAreaView,
+    SafeAreaView, StatusBar,
 } from 'react-native';
 import LinearGradient from "react-native-linear-gradient";
 import SaveIcon from '../../assets/svg/SaveIcon.svg'
@@ -25,8 +25,10 @@ import {
 import {IAllocation} from "../../types/allocation_type.ts";
 import {format} from "date-fns";
 import {useFocusEffect} from "@react-navigation/native";
+import {useStatusBarOnFocus} from "../../hooks/useStatusBar.ts";
 
 export default function HomeScreen() {
+    useStatusBarOnFocus('light-content', '#394f45')
     const navigation = useAppNavigation()
     const [addAllocationModalVisible, setAddAllocationModalVisible] = useState(false);
     const [modifyAllocationModalVisible, setModifyAllocationModalVisible] = useState(false);
@@ -104,6 +106,8 @@ export default function HomeScreen() {
 
     return (
         <SafeAreaView className="flex-1 bg-gray-800">
+            <StatusBar backgroundColor={'#394f45'} barStyle={'light-content'}/>
+
             <LinearGradient
                 colors={['#394f45', '#282828', '#282828']}
                 locations={[0, 0.15, 1]}

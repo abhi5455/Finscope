@@ -7,11 +7,12 @@ import {
     SafeAreaView,
     StatusBar,
     KeyboardAvoidingView,
-    Platform,
+    Platform, ActivityIndicator,
 } from 'react-native';
 import FinscopeLogo from '../../assets/svg/FinscopeLogo.svg'
 import {signInWithEmailPassword, signUpWithEmailPassword} from "../../services/supabaseClient.ts";
 import {useAppNavigation} from "../../common/navigationHelper.ts";
+import {Eye, EyeOff} from "lucide-react-native";
 
 const LoginScreen: React.FC = () => {
     const navigation = useAppNavigation();
@@ -19,6 +20,13 @@ const LoginScreen: React.FC = () => {
     const [name, setName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+
+    const togglePasswordVisibility = () => {
+        setIsPasswordVisible(!isPasswordVisible)
+    }
+
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     return (
         <SafeAreaView className="flex-1 bg-secondary">
@@ -96,25 +104,33 @@ const LoginScreen: React.FC = () => {
 
                         {/* Password Input */}
                         <View>
-                            <Text className="text-gray-300 text-sm font-interMedium mb-2">
-                                Password
-                            </Text>
-                            <TextInput
-                                value={password}
-                                onChangeText={setPassword}
-                                placeholder="Enter your email address"
-                                placeholderTextColor="#666666"
-                                className="bg-[#494949]/80 text-white text-base font-interMedium px-4 py-4 rounded-xl  border-[1px] border-[#666666]"
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                autoComplete="email"
-                            />
+                            <Text className="text-gray-300 text-sm font-interMedium mb-2">Password</Text>
+                            <View className="relative">
+                                <TextInput
+                                    value={password}
+                                    onChangeText={setPassword}
+                                    placeholder="Enter your password"
+                                    placeholderTextColor="#666666"
+                                    className="bg-[#494949]/80 text-white text-base font-interMedium px-4 py-4 pr-12 rounded-xl border-[1px] border-[#666666]"
+                                    secureTextEntry={!isPasswordVisible}
+                                    autoCapitalize="none"
+                                    autoComplete="password"
+                                />
+                                <TouchableOpacity
+                                    onPress={togglePasswordVisibility}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2"
+                                    style={{ transform: [{ translateY: -12 }] }}
+                                >
+                                    {isPasswordVisible ? <Eye size={20} color="#666666" /> : <EyeOff size={20} color="#666666" />}
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
 
                     {/* Login Button */}
                     <TouchableOpacity
                         onPress={() => {
+                            setIsLoading(true)
                             if (toSignIn) {
                                 signInWithEmailPassword(email, password)
                                     .then(() => {
@@ -123,7 +139,8 @@ const LoginScreen: React.FC = () => {
                                     })
                                     .catch(err => {
                                         console.error("Login error:", err.message);
-                                    });
+                                    })
+                                    .finally(() => setIsLoading(false));
                             } else {
                                 signUpWithEmailPassword(name, email, password)
                                     .then(() => {
@@ -132,16 +149,21 @@ const LoginScreen: React.FC = () => {
                                     })
                                     .catch(err => {
                                         console.error("Signup error:", err.message);
-                                    });
+                                    })
+                                    .finally(() => setIsLoading(false));
                             }
 
                         }}
                         className="bg-primary py-4 rounded-xl mt-8 active:bg-green-500"
                         activeOpacity={0.8}
                     >
-                        <Text className="text-secondary text-base font-interSemiBold text-center">
-                            Continue
-                        </Text>
+                        {!isLoading ?
+                            <Text className="text-secondary text-base font-interSemiBold text-center">
+                                Continue
+                            </Text>
+                            :
+                            <ActivityIndicator color={'#282828'} size={'small'}/>
+                        }
                     </TouchableOpacity>
 
                     {/* Footer */}

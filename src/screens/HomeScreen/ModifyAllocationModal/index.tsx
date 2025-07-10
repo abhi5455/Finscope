@@ -139,6 +139,7 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
                         <TextInput
                             value={title}
                             onChangeText={setTitle}
+                            keyboardType={'default'}
                             placeholder="Allocation title"
                             placeholderTextColor="#9ca3af"
                             className="bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
@@ -150,6 +151,7 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
                         <TextInput
                             value={type}
                             onChangeText={setType}
+                            keyboardType={'default'}
                             placeholder="Type"
                             placeholderTextColor="#9ca3af"
                             className="bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
@@ -189,6 +191,7 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
                         <TextInput
                             value={remarks}
                             onChangeText={setRemarks}
+                            keyboardType={'default'}
                             placeholder="Remarks"
                             placeholderTextColor="#9ca3af"
                             className="bg-transparent border border-[#9fafaf] rounded-lg px-4 py-4 text-white font-interMedium text-base"
