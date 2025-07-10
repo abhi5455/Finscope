@@ -12,7 +12,9 @@ export async function createNewAllocation(
     const allocation = {
         title,
         type,
-        amount: parseFloat(amount),
+        // amount: parseFloat(amount),
+        // Start with amount = 0; actual value comes from initial transaction + trigger
+        amount: 0,
         user_id: user?.id
     }
 

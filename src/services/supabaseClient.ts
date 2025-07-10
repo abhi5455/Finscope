@@ -40,10 +40,10 @@ export const signUpWithEmailPassword = async (
         }
     });
 
-    console.log("🔷 Signup response:", { data, error });
+    console.log("Signup response:", { data, error });
 
     if (data?.user) {
-        console.log("✅ Signup successful:", data.user);
+        console.log("Signup successful:", data.user);
 
         // Add user metadata to profiles table
         const {data: {user}} = await supabase.auth.getUser();
@@ -57,7 +57,7 @@ export const signUpWithEmailPassword = async (
     }
 
     if (error) {
-        console.error("❌ Signup failed:", error);
+        console.error("Signup failed:", error);
         throw error;
     }
 };
@@ -69,12 +69,12 @@ export const signInWithEmailPassword = async (email: string, password: string) =
     console.log("🔷 Login response:", { data, error });
 
     if (data?.user) {
-        console.log("✅ Login successful:", data.user);
+        console.log("Login successful:", data.user);
         return { status: 'logged_in', user: data.user, session: data.session };
     }
 
     if (error) {
-        console.error("❌ Login failed:", error);
+        console.error("Login failed:", error);
         throw error;
     }
 };
@@ -82,12 +82,12 @@ export const signInWithEmailPassword = async (email: string, password: string) =
 
 export const signInOrSignUp = async (email: string, password: string) => {
     if (await checkSignedUpWithEmailPassword(email, password)) {
-        console.log("👤 User already exists, trying to log in…");
+        console.log("User already exists, trying to log in…");
 
         signInWithEmailPassword(email, password)
     }
     else {
-        console.log("🔷 Trying to sign up:", email);
+        console.log("Trying to sign up:", email);
         // SignUpWithEmailPassword(email, password)
     }
 
