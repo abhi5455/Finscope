@@ -59,6 +59,12 @@ const ModifyAllocationModal: React.FC<AddAllocationModalProps> = ({
                 })
                 .catch((error) => {
                     console.error('Error updating allocation:', error);
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error updating allocation:',
+                        text2: error.message || 'An unexpected error occurred.',
+                        position: 'bottom'
+                    });
                 })
                 .finally(() => {
                     setAmount('');
