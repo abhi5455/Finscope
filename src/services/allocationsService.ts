@@ -1,5 +1,6 @@
 import {supabase} from "./supabaseClient.ts";
 import Toast from "react-native-toast-message";
+import {ITransaction} from "../types/allocation_type.ts";
 
 export async function createNewAllocation(
     title: string,
@@ -240,4 +241,88 @@ export async function getAllTransactions(): Promise<any[]> {
             ...t,
             allocation_title: t.allocations?.title || ''
         }));
+}
+
+export async function getGrowthThisMonth(){
+    const now = new Date();
+
+    const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+    const startOfThisMonthStr = startOfThisMonth.toISOString()
+    const startOfNextMonthStr = startOfNextMonth.toISOString();
+    const startOfLastMonthStr = startOfLastMonth.toISOString();
+
+    // This Month
+    const {data: thisMonthData, error: thisMonthError} = await supabase
+        .from('transactions')
+        .select('*')
+        .gte('created_at', startOfThisMonthStr)
+        .lt('created_at', startOfNextMonthStr);
+
+    console.log("This Month Data ", thisMonthData)
+
+    if(thisMonthError) {
+        throw thisMonthError;
+    }
+
+    const growthThisMonth = ((thisMonthData ?? []) as ITransaction[]).reduce(
+        (total: number, transaction: ITransaction) => {
+            if (transaction.transaction_type === 'deducted') {
+                return total - Number(transaction.amount || 0);
+            }
+            if (transaction.transaction_type === 'added') {
+                return total + Number(transaction.amount || 0);
+            }
+            console.log("Total ", total)
+            return total;
+        },
+        0
+    );
+
+    // Last Month
+    const {data: lastMonthData, error: lastMonthError} = await supabase
+        .from('transactions')
+        .select('*')
+        .gte('created_at', startOfLastMonthStr)
+        .lt('created_at', startOfThisMonthStr);
+
+    console.log("Last Month Data ", lastMonthData, startOfLastMonthStr, startOfThisMonthStr)
+
+    const {data: Data, error: Error} = await supabase
+        .from('transactions')
+        .select('*')
+
+    console.log("Data ", Data, startOfLastMonthStr, startOfThisMonthStr)
+
+
+    if(lastMonthError) {
+        throw lastMonthError;
+    }
+
+    const growthLastMonth = ((lastMonthData ?? []) as ITransaction[]).reduce(
+        (total: number, transaction: ITransaction) => {
+            if (transaction.transaction_type === 'deducted') {
+                return total - Number(transaction.amount || 0);
+            }
+            if (transaction.transaction_type === 'added') {
+                return total + Number(transaction.amount || 0);
+            }
+            return total;
+        },
+        0
+    );
+
+    // Calculate the growth percentage
+    const growthPercentage = growthLastMonth !== 0
+        ? ((growthThisMonth - growthLastMonth) / Math.abs(growthLastMonth)) * 100
+        : 0;
+
+    return {
+        growthThisMonth: growthThisMonth.toFixed(2),
+        growthLastMonth: growthLastMonth.toFixed(2),
+        growthPercentage: growthPercentage.toFixed(0)
+    };
+
 }

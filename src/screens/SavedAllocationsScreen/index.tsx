@@ -14,7 +14,7 @@ import Pattern from '../../assets/svg/Pattern1.svg';
 import {PieChart} from "react-native-chart-kit";
 import {useAppNavigation} from "../../common/navigationHelper.ts";
 import {
-    countTotalAllocationAmount,
+    countTotalAllocationAmount, getGrowthThisMonth,
     getSavedAllocations,
     saveAllocation,
     unsaveAllocation
@@ -25,6 +25,8 @@ import AddAllocationModal from "../HomeScreen/AddAllocationModal";
 import ModifyAllocationModal from "../HomeScreen/ModifyAllocationModal";
 import {useFocusEffect} from "@react-navigation/native";
 import {useStatusBarOnFocus} from "../../hooks/useStatusBar.ts";
+import TrendDown from "../../assets/svg/TrendDown.svg";
+import TrendUp from "../../assets/svg/TrendUp.svg";
 
 export default function SavedAllocationsScreen() {
     useStatusBarOnFocus('light-content', '#394f45')
@@ -35,6 +37,10 @@ export default function SavedAllocationsScreen() {
     const [allocations, setAllocations] = useState<IAllocation[]>([]);
     const [selectedAllocation, setSelectedAllocation] = useState<IAllocation | null>(null);
     const [savedAllocations, setSavedAllocations] = useState<Set<string>>(new Set());
+
+    const [growthThisMonth, setGrowthThisMonth] = useState<string>()
+    const [growthLastMonth, setGrowthLastMonth] = useState<string>()
+    const [growthPercentage, setGrowthPercentage] = useState<string>()
 
     const [triggerRefetch, setTriggerRefetch] = useState(0);
 
@@ -95,6 +101,15 @@ export default function SavedAllocationsScreen() {
             .then((totalAmount) => {
                 setTotalAllocationAmount(totalAmount);
             })
+
+        getGrowthThisMonth()
+            .then(res => {
+                setGrowthThisMonth(res.growthThisMonth)
+                setGrowthLastMonth(res.growthLastMonth)
+                setGrowthPercentage(res.growthPercentage)
+
+                console.log("Growth ", res.growthThisMonth, res.growthLastMonth, res.growthPercentage, typeof res.growthLastMonth)
+            })
     };
 
     useFocusEffect(
@@ -122,20 +137,29 @@ export default function SavedAllocationsScreen() {
                         <Text className="text-white text-2xl font-interSemiBold mb-4">
                             Your Net{'\n'}Worth
                         </Text>
-                        <Text className="text-primary text-4xl font-interSemiBold mb-6">
-                            ${totalAllocationAmount}
+                        <Text className="text-primary text-3xl font-interSemiBold mb-6">
+                            ${Number(totalAllocationAmount).toFixed(2)}
                         </Text>
                     </View>
                     {/* Growth Card */}
                     <View
-                        className="relative bg-[#3b7e5e] border-[1.5px] border-[#46aa7c] rounded-2xl p-4 flex-row items-center justify-between">
+                        className="relative bg-[#3b7e5e] border-[2px] border-[#46aa7c] rounded-2xl p-4 flex-row items-center justify-between">
                         <View className="">
-                            <Text className="text-white text-sm font-interMedium mb-1">
-                                + $124,900.85
+                            <Text className="text-primary text-sm font-interMedium mb-1">
+                                {growthThisMonth && Number(growthThisMonth) < 0 ? '-' : '+'} ${growthThisMonth && Math.abs(Number(growthThisMonth))}
                             </Text>
-                            <Text className="text-white text-2xl font-interSemiBold mb-1">
-                                10%
-                            </Text>
+                            <View className="flex flex-row items-center justify-between gap-2 py-1">
+                                <Text className="text-white text-3xl font-interBold mb-1">
+                                    {growthPercentage}%
+                                </Text>
+                                <View>
+                                    {growthThisMonth && Number(growthThisMonth) < 0 ?
+                                        <TrendDown/>
+                                        :
+                                        <TrendUp height={35}/>
+                                    }
+                                </View>
+                            </View>
                             <Text className="text-white text-sm font-interMedium">
                                 Growth this month
                             </Text>
