@@ -288,14 +288,7 @@ export async function getGrowthThisMonth(){
         .gte('created_at', startOfLastMonthStr)
         .lt('created_at', startOfThisMonthStr);
 
-    console.log("Last Month Data ", lastMonthData, startOfLastMonthStr, startOfThisMonthStr)
-
-    const {data: Data, error: Error} = await supabase
-        .from('transactions')
-        .select('*')
-
-    console.log("Data ", Data, startOfLastMonthStr, startOfThisMonthStr)
-
+    console.log("Last Month Data ", lastMonthData)
 
     if(lastMonthError) {
         throw lastMonthError;
