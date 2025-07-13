@@ -37,9 +37,9 @@ export default function SavedAllocationsScreen() {
     const [selectedAllocation, setSelectedAllocation] = useState<IAllocation | null>(null);
     const [savedAllocations, setSavedAllocations] = useState<Set<string>>(new Set());
 
-    const [growthThisMonth, setGrowthThisMonth] = useState<string>()
+    const [growthThisMonth, setGrowthThisMonth] = useState<string>('0')
     const [growthLastMonth, setGrowthLastMonth] = useState<string>()
-    const [growthPercentage, setGrowthPercentage] = useState<string>()
+    const [growthPercentage, setGrowthPercentage] = useState<string>('0')
 
     const [triggerRefetch, setTriggerRefetch] = useState(0);
 
