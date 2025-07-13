@@ -4,13 +4,12 @@ import {
     Text,
     ScrollView,
     TouchableOpacity,
-    SafeAreaView, StatusBar,
+    SafeAreaView, StatusBar, Image,
 } from 'react-native';
 import LinearGradient from "react-native-linear-gradient";
 import SaveIcon from '../../assets/svg/SaveIcon.svg'
 import SaveIconFilled from '../../assets/svg/SaveIconFilled.svg';
 import MagicPencilIcon from '../../assets/svg/MagicPencilIcon.svg';
-import Pattern from '../../assets/svg/Pattern1.svg';
 import PlusIcon from '../../assets/svg/PlusIcon.svg';
 import {PieChart} from "react-native-chart-kit";
 import {useAppNavigation} from "../../common/navigationHelper.ts";
@@ -140,9 +139,10 @@ export default function HomeScreen() {
                     </View>
                     {/* Growth Card */}
                     <View
-                        className="relative bg-[#3b7e5e] border-[2px] border-[#46aa7c] rounded-2xl p-4 flex-row items-center justify-between">
+                        className={`relative border-[2px] ${Number(growthThisMonth) < 0 ? 'bg-[#a63b3b]/80 border-[#FF4C4C]' : 'bg-[#3b7e5e] border-[#46aa7c]'} rounded-2xl p-4 flex-row items-center justify-between overflow-hidden max-w-[45%]`}>
                         <View className="">
-                            <Text className="text-primary text-sm font-interMedium mb-1">
+                            <Text
+                                className={`${Number(growthThisMonth) < 0 ? 'text-[#FF4C4C]' : 'text-primary'} text-sm font-interMedium mb-1`}>
                                 {growthThisMonth && Number(growthThisMonth) < 0 ? '-' : '+'} ${growthThisMonth && Math.abs(Number(growthThisMonth))}
                             </Text>
                             <View className="flex flex-row items-center justify-between gap-2 py-1">
@@ -161,8 +161,8 @@ export default function HomeScreen() {
                                 Growth this month
                             </Text>
                         </View>
-                        <View className="absolute left-0 top-0">
-                            <Pattern/>
+                        <View className="absolute left-0 top-0 right-0 bottom-0">
+                            <Image source={require('../../assets/png/Pattern.png')} className=""/>
                         </View>
                     </View>
                 </View>
