@@ -100,11 +100,11 @@ export default function HomeScreen() {
 
         getGrowthThisMonth()
             .then(res => {
-                setGrowthThisMonth(res.growthThisMonth)
-                setGrowthLastMonth(res.growthLastMonth)
+                setGrowthThisMonth(res.totalThisMonth)
+                setGrowthLastMonth(res.totalLastMonth)
                 setGrowthPercentage(res.growthPercentage)
 
-                console.log("Growth ", res.growthThisMonth, res.growthLastMonth, res.growthPercentage, typeof res.growthLastMonth)
+                console.log("Growth ", res.totalThisMonth, res.totalLastMonth, res.growthPercentage, typeof res.totalLastMonth)
             })
     };
 

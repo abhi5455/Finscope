@@ -243,79 +243,106 @@ export async function getAllTransactions(): Promise<any[]> {
         }));
 }
 
-export async function getGrowthThisMonth(){
+export async function getGrowthThisMonth() {
     const now = new Date();
+    const { data: { user } } = await supabase.auth.getUser();
 
     const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
-    const startOfThisMonthStr = startOfThisMonth.toISOString()
-    const startOfNextMonthStr = startOfNextMonth.toISOString();
-    const startOfLastMonthStr = startOfLastMonth.toISOString();
+    const isoThisMonthStart = startOfThisMonth.toISOString();
+    const isoNextMonthStart = startOfNextMonth.toISOString();
+    const isoLastMonthStart = startOfLastMonth.toISOString();
 
     // This Month
-    const {data: thisMonthData, error: thisMonthError} = await supabase
-        .from('transactions')
-        .select('*')
-        .gte('created_at', startOfThisMonthStr)
-        .lt('created_at', startOfNextMonthStr);
+    // const { data: thisMonthData, error: thisMonthError } =
+    //     await supabase
+    //         .from('transactions')
+    //         .select(`
+    //   *,
+    //   allocation!inner(
+    //     user_id
+    //   )
+    // `)
+    //         .gte('created_at', startOfThisMonthStr)
+    //         .lt('created_at', startOfNextMonthStr)
+    //         .eq('allocation.user_id', user?.id);
 
-    console.log("This Month Data ", thisMonthData)
+    // Fetch all transactions this month and filter by user
+    const { data: rawThisMonthTxns, error: thisMonthError } =
+        await supabase
+            .from('transactions')
+            .select(`
+                *,
+                allocation:allocations(user_id)
+            `)
+            .gte('created_at', isoThisMonthStart)
+            .lt('created_at', isoNextMonthStart);
 
-    if(thisMonthError) {
-        throw thisMonthError;
-    }
+    if (thisMonthError) throw thisMonthError;
 
-    const growthThisMonth = ((thisMonthData ?? []) as ITransaction[]).reduce(
-        (total: number, transaction: ITransaction) => {
-            if (transaction.transaction_type === 'deducted') {
-                return total - Number(transaction.amount || 0);
+    const thisMonthTxnsForUser = (rawThisMonthTxns ?? []).filter(
+        (txn) => txn.allocation.user_id === user?.id
+    );
+
+    console.log("This Month Transactions for User:", thisMonthTxnsForUser, user?.id);
+
+    const totalThisMonth = thisMonthTxnsForUser.reduce(
+        (total: number, txn: ITransaction) => {
+            if (txn.transaction_type === 'deducted') {
+                return total - Number(txn.amount || 0);
             }
-            if (transaction.transaction_type === 'added') {
-                return total + Number(transaction.amount || 0);
+            if (txn.transaction_type === 'added') {
+                return total + Number(txn.amount || 0);
             }
-            console.log("Total ", total)
             return total;
         },
         0
     );
+
+    console.log("Total This Month:", totalThisMonth);
 
     // Last Month
-    const {data: lastMonthData, error: lastMonthError} = await supabase
-        .from('transactions')
-        .select('*')
-        .gte('created_at', startOfLastMonthStr)
-        .lt('created_at', startOfThisMonthStr);
+    const { data: rawLastMonthTxns, error: lastMonthError } =
+        await supabase
+            .from('transactions')
+            .select(`
+                *,
+                allocation:allocations(user_id)
+            `)
+            .gte('created_at', isoLastMonthStart)
+            .lt('created_at', isoThisMonthStart);
 
-    console.log("Last Month Data ", lastMonthData)
+    if (lastMonthError) throw lastMonthError;
 
-    if(lastMonthError) {
-        throw lastMonthError;
-    }
+    const lastMonthTxnsForUser = (rawLastMonthTxns ?? []).filter(
+        (txn) => txn.allocation.user_id === user?.id
+    );
 
-    const growthLastMonth = ((lastMonthData ?? []) as ITransaction[]).reduce(
-        (total: number, transaction: ITransaction) => {
-            if (transaction.transaction_type === 'deducted') {
-                return total - Number(transaction.amount || 0);
+    console.log("Last Month Transactions for User:", lastMonthTxnsForUser);
+
+    const totalLastMonth = lastMonthTxnsForUser.reduce(
+        (total: number, txn: ITransaction) => {
+            if (txn.transaction_type === 'deducted') {
+                return total - Number(txn.amount || 0);
             }
-            if (transaction.transaction_type === 'added') {
-                return total + Number(transaction.amount || 0);
+            if (txn.transaction_type === 'added') {
+                return total + Number(txn.amount || 0);
             }
             return total;
         },
         0
     );
 
-    // Calculate the growth percentage
-    const growthPercentage = growthLastMonth !== 0
-        ? ((growthThisMonth - growthLastMonth) / Math.abs(growthLastMonth)) * 100
-        : 0;
+    const growthPercentage =
+        totalLastMonth !== 0
+            ? ((totalThisMonth - totalLastMonth) / Math.abs(totalLastMonth)) * 100
+            : 0;
 
     return {
-        growthThisMonth: growthThisMonth.toFixed(2),
-        growthLastMonth: growthLastMonth.toFixed(2),
+        totalThisMonth: totalThisMonth.toFixed(2),
+        totalLastMonth: totalLastMonth.toFixed(2),
         growthPercentage: growthPercentage.toFixed(0)
     };
-
 }
