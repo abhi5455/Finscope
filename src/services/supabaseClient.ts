@@ -2,9 +2,9 @@ import {createClient} from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from "react-native-toast-message";
 
-const supabaseUrl: string = 'https://avygnyvqvuqpxorvwwif.supabase.co';
+const supabaseUrl: string = 'https://tfeewrujvuatxcghxbbm.supabase.co';
 const supabaseAnonKey: string =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2eWdueXZxdnVxcHhvcnZ3d2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5MDUwODksImV4cCI6MjA2NzQ4MTA4OX0.Cc7jERFZxrNPU2lOIdRX6m1b2OaMz4lOsM4J21oDdY8';
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmZWV3cnVqdnVhdHhjZ2h4YmJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEzMDg5NDUsImV4cCI6MjA2Njg4NDk0NX0.sDlcpMzcMvSu0nDOd-utVvAq1RBCyfcqUUHlXOgpDx8';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
